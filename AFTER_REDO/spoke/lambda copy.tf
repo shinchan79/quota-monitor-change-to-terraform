@@ -34,7 +34,7 @@ module "lambda" {
         TOPIC_ARN                              = module.sns.sns_topic_arns["sns_publisher"] 
         LOG_LEVEL                              = var.log_level
         CUSTOM_SDK_USER_AGENT                  = var.custom_sdk_user_agent
-        VERSION                                = var.version
+        VERSION                                = var.solution_version
         SOLUTION_ID                            = var.solution_id
       }
 
@@ -78,7 +78,7 @@ module "lambda" {
         SORT                  = var.sort_key
         LOG_LEVEL            = var.log_level
         CUSTOM_SDK_USER_AGENT = var.custom_sdk_user_agent
-        VERSION              = var.version
+        VERSION              = var.solution_version
         SOLUTION_ID          = var.solution_id
       }
 
@@ -151,7 +151,7 @@ module "lambda" {
         SQ_REPORT_OK_NOTIFICATIONS = var.report_ok_notifications
         LOG_LEVEL                  = var.log_level
         CUSTOM_SDK_USER_AGENT      = var.custom_sdk_user_agent
-        VERSION                    = var.version
+        VERSION                    = var.solution_version
         SOLUTION_ID               = var.solution_id
       }
 
@@ -196,7 +196,7 @@ module "lambda" {
         AWS_SERVICES          = var.aws_services
         LOG_LEVEL            = var.log_level
         CUSTOM_SDK_USER_AGENT = var.custom_sdk_user_agent
-        VERSION              = var.version
+        VERSION              = var.solution_version
         SOLUTION_ID          = var.solution_id
       }
 
@@ -249,7 +249,7 @@ variable "custom_sdk_user_agent" {
   default     = "AwsSolution/SO0005/v6.3.0"
 }
 
-variable "version" {
+variable "solution_version" {
   description = "Solution version"
   type        = string
   default     = "v6.3.0"
@@ -277,27 +277,4 @@ variable "aws_services" {
   description = "Comma separated list of AWS services to monitor"
   type        = string
   default     = "AutoScaling,CloudFormation,DynamoDB,EBS,EC2,ELB,IAM,Kinesis,RDS,Route53,SES,VPC"
-}
-
-variable "monitoring_frequency" {
-  description = "Frequency of monitoring in minutes"
-  type        = number
-}
-
-variable "notification_threshold" {
-  description = "Threshold for notifications"
-  type        = number
-}
-
-variable "report_ok_notifications" {
-  description = "Whether to report OK notifications"
-  type        = bool
-}
-
-variable "vpc_config" {
-  description = "VPC configuration for Lambda functions"
-  type = object({
-    security_group_ids = list(string)
-    subnet_ids         = list(string)
-  })
 }

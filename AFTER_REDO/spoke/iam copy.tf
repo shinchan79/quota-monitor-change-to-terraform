@@ -584,18 +584,6 @@ locals {
   ]
 }
 
-variable "master_prefix" {
-  description = "Prefix to be used for all resources"
-  type        = string
-  default     = "qm"
-}
-
-variable "tags" {
-  description = "Tags to be applied to all resources"
-  type        = map(string)
-  default     = {}
-}
-
 variable "event_bus_arn" {
   description = "ARN of the event bus"
   type        = string

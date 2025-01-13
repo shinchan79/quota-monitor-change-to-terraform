@@ -33,12 +33,6 @@ module "sns" {
   }
 }
 
-variable "master_prefix" {
-  description = "Prefix to be used for all resources"
-  type        = string
-  default     = "qm"
-}
-
 variable "tags" {
   description = "Tags to be applied to all resources"
   type        = map(string)

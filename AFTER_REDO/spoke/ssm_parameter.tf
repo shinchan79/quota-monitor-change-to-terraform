@@ -40,18 +40,6 @@ module "ssm_parameter" {
   }
 }
 
-variable "master_prefix" {
-  description = "Prefix to be used for all resources"
-  type        = string
-  default     = "qm"
-}
-
-variable "tags" {
-  description = "Tags to be applied to all resources"
-  type        = map(string)
-  default     = {}
-}
-
 variable "notification_muting_value" {
   description = "Value for notification muting parameter"
   type        = string

@@ -1,14 +1,4 @@
 ################# QM Spoke
-variable "event_bus_arn" {
-  type        = string
-  description = "Arn for the EventBridge bus in the monitoring account"
-}
-
-variable "spoke_sns_region" {
-  type        = string
-  description = "The region in which the spoke SNS stack exists in this account. Leave blank if the spoke SNS is not needed."
-  default     = ""
-}
 
 variable "notification_threshold" {
   type        = string
@@ -79,10 +69,10 @@ variable "vpc_config" {
 
 ################# TA Spoke
 
-variable "master_prefix"{
-  type = string
-  default = "qm"
-}
+# variable "master_prefix"{
+#   type = string
+#   default = "qm"
+# }
 
 variable "ta_refresh_rate" {
   type        = string

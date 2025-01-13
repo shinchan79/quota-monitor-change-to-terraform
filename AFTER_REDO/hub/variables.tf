@@ -88,11 +88,6 @@ variable "sq_report_ok_notifications" {
   default     = false
 }
 
-variable "master_prefix" {
-  type = string
-  default = "qm"
-}
-
 variable "enable_account_deploy"{
   type = bool
   default = true
