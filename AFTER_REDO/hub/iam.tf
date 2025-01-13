@@ -889,8 +889,21 @@ variable "tags" {
   default     = {}
 }
 
-variable "enable_account_deploy" {
-  description = "Enable account deployment"
-  type        = bool
-  default     = false
+
+variable "policy_version" {
+  description = "Version of the IAM policy"
+  type        = string
+  default     = "2012-10-17"
+}
+
+variable "effect_allow" {
+  description = "Allow effect for IAM policies"
+  type        = string
+  default     = "Allow"
+}
+
+variable "all_resources" {
+  description = "Wildcard for all resources"
+  type        = string
+  default     = "*"
 }
