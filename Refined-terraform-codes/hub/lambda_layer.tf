@@ -16,27 +16,3 @@ module "lambda_layer" {
     }
   }
 }
-
-variable "lambda_layer_config" {
-  description = "Configuration for Lambda Layer"
-  type = object({
-    layer = object({
-      name     = string
-      runtimes = list(string)
-    })
-    code = object({
-      s3_bucket = string
-      s3_key    = string
-    })
-  })
-  default = {
-    layer = {
-      name     = "QM-UtilsLayer"
-      runtimes = ["nodejs18.x"]
-    }
-    code = {
-      s3_bucket = "immersionday-aaaa-jjjj"
-      s3_key    = "test-aws-myApplication.zip"
-    }
-  }
-}

@@ -37,25 +37,12 @@ module "dynamodb" {
 
       deletion_protection_enabled = true
 
-      tags = {
-        Name = var.dynamodb_config.table_name
-      }
+      tags = merge(
+        {
+          Name = var.dynamodb_config.table_name
+        },
+        local.merged_tags
+      )
     }
-  }
-}
-
-variable "dynamodb_config" {
-  description = "Configuration for DynamoDB table"
-  type = object({
-    table_name    = string
-    hash_key      = string
-    range_key     = string
-    ttl_attribute = string
-  })
-  default = {
-    table_name    = "QuotaMonitor-Table"
-    hash_key      = "MessageId"
-    range_key     = "TimeStamp"
-    ttl_attribute = "ExpiryTime"
   }
 }

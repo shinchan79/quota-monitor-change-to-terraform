@@ -48,75 +48,13 @@ module "helper_lambda" {
         log_level  = var.helper_config.lambda_logging.logging_level
       }
 
-      tags = {
-        Name = var.helper_config.lambda_function.tag_name
-      }
-    }
-  }
-}
-
-variable "helper_config" {
-  description = "Configuration for Helper Lambda function"
-  type = object({
-    lambda_function = object({
-      name        = string
-      description = string
-      runtime     = string
-      handler     = string
-      timeout     = number
-      memory_size = number
-      tag_name    = string
-    })
-    lambda_code = object({
-      s3_bucket = string
-      s3_key    = string
-    })
-    lambda_environment = object({
-      stack_id       = string
-      sdk_user_agent = string
-      version        = string
-      solution_id    = string
-    })
-    lambda_event = object({
-      max_event_age = number
-      qualifier     = string
-    })
-    lambda_logging = object({
-      log_level     = string
-      log_format    = string
-      log_group     = string
-      logging_level = string
-    })
-  })
-  default = {
-    lambda_function = {
-      name        = "Helper-Function"
-      description = "SO0005 quota-monitor-for-aws - QM-Helper-Function"
-      runtime     = "nodejs18.x"
-      handler     = "index.handler"
-      timeout     = 5
-      memory_size = 128
-      tag_name    = "QuotaMonitor-Helper"
-    }
-    lambda_code = {
-      s3_bucket = "immersionday-aaaa-jjjj"
-      s3_key    = "test-aws-myApplication.zip"
-    }
-    lambda_environment = {
-      stack_id       = "quota-monitor-hub"
-      sdk_user_agent = "AwsSolution/SO0005/v6.3.0"
-      version        = "v6.3.0"
-      solution_id    = "SO0005"
-    }
-    lambda_event = {
-      max_event_age = 14400
-      qualifier     = "$LATEST"
-    }
-    lambda_logging = {
-      log_level     = "info"
-      log_format    = "JSON"
-      log_group     = "/aws/lambda/QuotaMonitor-Helper"
-      logging_level = "INFO"
+      tags = merge(
+        {
+          Name = var.helper_config.lambda_function.name
+        },
+        var.helper_config.lambda_function.tags,
+        local.merged_tags
+      )
     }
   }
 }

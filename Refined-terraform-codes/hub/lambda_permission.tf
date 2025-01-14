@@ -36,29 +36,3 @@ module "lambda_permissions" {
     module.event_rule
   ]
 }
-
-variable "lambda_permissions_config" {
-  description = "Configuration for Lambda permissions"
-  type = map(object({
-    statement_id = string
-    action       = string
-    principal    = string
-  }))
-  default = {
-    sns_publisher = {
-      statement_id = "AllowEventBridgeInvoke"
-      action       = "lambda:InvokeFunction"
-      principal    = "events.amazonaws.com"
-    }
-    reporter = {
-      statement_id = "AllowEventBridgeInvoke"
-      action       = "lambda:InvokeFunction"
-      principal    = "events.amazonaws.com"
-    }
-    deployment_manager = {
-      statement_id = "AllowEventBridgeInvoke"
-      action       = "lambda:InvokeFunction"
-      principal    = "events.amazonaws.com"
-    }
-  }
-}

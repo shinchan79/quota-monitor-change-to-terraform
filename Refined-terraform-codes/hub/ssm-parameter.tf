@@ -7,88 +7,80 @@ module "ssm_parameter" {
 
   ssm_parameters = {
     slack_webhook = {
-      name        = local.quota_monitor_map.SSMParameters.SlackHook
+      name        = var.ssm_parameters_config["slack_webhook"].name
       description = var.ssm_parameters_config["slack_webhook"].description
       type        = var.ssm_parameters_config["slack_webhook"].type
       value       = var.ssm_parameters_config["slack_webhook"].value
       tier        = var.ssm_parameters_config["slack_webhook"].tier
       create      = var.slack_notification == "Yes"
-      tags        = var.tags
+      tags = merge(
+        {
+          Name = var.ssm_parameters_config["slack_webhook"].name
+        },
+        var.ssm_parameters_config["slack_webhook"].tags,
+        local.merged_tags
+      )
     }
 
     organizational_units = {
-      name        = local.quota_monitor_map.SSMParameters.OrganizationalUnits
+      name        = var.ssm_parameters_config["organizational_units"].name
       description = var.ssm_parameters_config["organizational_units"].description
       type        = var.ssm_parameters_config["organizational_units"].type
       value       = var.ssm_parameters_config["organizational_units"].value
       tier        = var.ssm_parameters_config["organizational_units"].tier
-      tags        = var.tags
+      tags = merge(
+        {
+          Name = var.ssm_parameters_config["organizational_units"].name
+        },
+        var.ssm_parameters_config["organizational_units"].tags,
+        local.merged_tags
+      )
     }
 
     target_accounts = {
-      name        = local.quota_monitor_map.SSMParameters.Accounts
+      name        = var.ssm_parameters_config["target_accounts"].name
       description = var.ssm_parameters_config["target_accounts"].description
       type        = var.ssm_parameters_config["target_accounts"].type
       value       = var.ssm_parameters_config["target_accounts"].value
       tier        = var.ssm_parameters_config["target_accounts"].tier
       create      = var.account_deployment
-      tags        = var.tags
+      tags = merge(
+        {
+          Name = var.ssm_parameters_config["target_accounts"].name
+        },
+        var.ssm_parameters_config["target_accounts"].tags,
+        local.merged_tags
+      )
     }
 
     notification_muting = {
-      name        = local.quota_monitor_map.SSMParameters.NotificationMutingConfig
+      name        = var.ssm_parameters_config["notification_muting"].name
       description = var.ssm_parameters_config["notification_muting"].description
       type        = var.ssm_parameters_config["notification_muting"].type
       value       = var.ssm_parameters_config["notification_muting"].value
       tier        = var.ssm_parameters_config["notification_muting"].tier
-      tags        = var.tags
+      tags = merge(
+        {
+          Name = var.ssm_parameters_config["notification_muting"].name
+        },
+        var.ssm_parameters_config["notification_muting"].tags,
+        local.merged_tags
+      )
     }
 
     regions_list = {
-      name        = local.quota_monitor_map.SSMParameters.RegionsList
+      name        = var.ssm_parameters_config["regions_list"].name
       description = var.ssm_parameters_config["regions_list"].description
       type        = var.ssm_parameters_config["regions_list"].type
       value       = var.regions_list
       tier        = var.ssm_parameters_config["regions_list"].tier
-      tags        = var.tags
+      tags = merge(
+        {
+          Name = var.ssm_parameters_config["regions_list"].name
+        },
+        var.ssm_parameters_config["regions_list"].tags,
+        local.merged_tags
+      )
     }
   }
-}
-
-variable "ssm_parameters_config" {
-  description = "Configuration for SSM parameters"
-  type = map(object({
-    description = string
-    type        = string
-    value       = optional(string, "NOP")
-    tier        = optional(string, "Standard")
-  }))
-  default = {
-    slack_webhook = {
-      description = "Slack Hook URL to send Quota Monitor events"
-      type        = "String"
-    }
-    organizational_units = {
-      description = "List of target Organizational Units"
-      type        = "StringList"
-    }
-    target_accounts = {
-      description = "List of target Accounts"
-      type        = "StringList"
-    }
-    notification_muting = {
-      description = "Muting configuration for services, limits e.g. ec2:L-1216C47A,ec2:Running On-Demand Standard (A, C, D, H, I, M, R, T, Z) instances,dynamodb,logs:*,geo:L-05EFD12D"
-      type        = "StringList"
-    }
-    regions_list = {
-      description = "list of regions to deploy spoke resources (eg. us-east-1,us-west-2)"
-      type        = "StringList"
-    }
-  }
-}
-
-variable "account_deployment" {
-  description = "Whether to enable account deployment"
-  type        = bool
-  default     = false
 }

@@ -35,52 +35,7 @@ module "kms" {
         ]
       }
 
-      tags = var.tags
-    }
-  }
-}
-
-variable "kms_config" {
-  description = "Configuration for KMS resources"
-  type = object({
-    key = object({
-      description     = string
-      deletion_window = number
-      enable_rotation = bool
-      alias           = string
-    })
-    policy = object({
-      version               = string
-      effect_allow          = string
-      all_resources         = string
-      iam_sid               = string
-      eventbridge_sid       = string
-      eventbridge_principal = string
-      admin_actions         = string
-      eventbridge_actions   = list(string)
-    })
-  })
-  default = {
-    key = {
-      description     = "CMK for AWS resources provisioned by Quota Monitor in this account"
-      deletion_window = 7
-      enable_rotation = true
-      alias           = "alias/CMK-KMS-Hub"
-    }
-    policy = {
-      version               = "2012-10-17"
-      effect_allow          = "Allow"
-      all_resources         = "*"
-      iam_sid               = "Enable IAM User Permissions"
-      eventbridge_sid       = "Allow EventBridge Service"
-      eventbridge_principal = "events.amazonaws.com"
-      admin_actions         = "kms:*"
-      eventbridge_actions = [
-        "kms:Decrypt",
-        "kms:Encrypt",
-        "kms:ReEncrypt*",
-        "kms:GenerateDataKey*"
-      ]
+      tags = local.merged_tags
     }
   }
 }

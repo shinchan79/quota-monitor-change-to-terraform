@@ -43,7 +43,7 @@ module "iam" {
           ]
         })
       }
-      tags = var.tags
+      tags = local.merged_tags
     }
 
     provider_framework = {
@@ -90,7 +90,7 @@ module "iam" {
         })
       }
 
-      tags = var.tags
+      tags = local.merged_tags
     }
 
     slack_notifier = {
@@ -109,7 +109,8 @@ module "iam" {
       })
 
       additional_policies = [
-        "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+        "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
       ]
 
       policies = {
@@ -142,23 +143,12 @@ module "iam" {
                 "arn:${data.aws_partition.current.partition}:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter${module.ssm_parameter.ssm_parameter_names["slack_webhook"]}",
                 "arn:${data.aws_partition.current.partition}:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter${module.ssm_parameter.ssm_parameter_names["notification_muting"]}"
               ]
-            },
-            {
-              Effect = "Allow"
-              Action = [
-                "ec2:CreateNetworkInterface",
-                "ec2:DescribeNetworkInterfaces",
-                "ec2:DeleteNetworkInterface",
-                "ec2:AssignPrivateIpAddresses",
-                "ec2:UnassignPrivateIpAddresses"
-              ]
-              Resource = "*"
             }
           ]
         })
       }
 
-      tags = var.tags
+      tags = local.merged_tags
     }
 
     sns_publisher = {
@@ -176,7 +166,8 @@ module "iam" {
         ]
       })
       additional_policies = [
-        "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+        "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
       ]
 
       policies = {
@@ -216,23 +207,12 @@ module "iam" {
               Effect   = "Allow"
               Action   = "ssm:GetParameter"
               Resource = "arn:${data.aws_partition.current.partition}:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter${module.ssm_parameter.ssm_parameter_names["notification_muting"]}"
-            },
-            {
-              Effect = "Allow"
-              Action = [
-                "ec2:CreateNetworkInterface",
-                "ec2:DescribeNetworkInterfaces",
-                "ec2:DeleteNetworkInterface",
-                "ec2:AssignPrivateIpAddresses",
-                "ec2:UnassignPrivateIpAddresses"
-              ]
-              Resource = "*"
             }
           ]
         })
       }
 
-      tags = var.tags
+      tags = local.merged_tags
     }
 
     reporter = {
@@ -250,7 +230,8 @@ module "iam" {
         ]
       })
       additional_policies = [
-        "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+        "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
       ]
 
       policies = {
@@ -291,23 +272,12 @@ module "iam" {
                 "dynamodb:PutItem"
               ]
               Resource = module.dynamodb.dynamodb_table_arns["quota_monitor"]
-            },
-            {
-              Effect = "Allow"
-              Action = [
-                "ec2:CreateNetworkInterface",
-                "ec2:DescribeNetworkInterfaces",
-                "ec2:DeleteNetworkInterface",
-                "ec2:AssignPrivateIpAddresses",
-                "ec2:UnassignPrivateIpAddresses"
-              ]
-              Resource = "*"
             }
           ]
         })
       }
 
-      tags = var.tags
+      tags = local.merged_tags
     }
 
     deployment_manager = {
@@ -325,7 +295,8 @@ module "iam" {
         ]
       })
       additional_policies = [
-        "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+        "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
       ]
 
       policies = {
@@ -422,43 +393,7 @@ module "iam" {
         })
       }
 
-      tags = var.tags
+      tags = local.merged_tags
     }
   }
-}
-
-variable "management_account_id" {
-  type        = string
-  description = "AWS Management Account ID"
-}
-
-variable "master_prefix" {
-  description = "Prefix to be used for all resources"
-  type        = string
-  default     = "qm"
-}
-
-variable "tags" {
-  description = "Tags to be applied to all resources"
-  type        = map(string)
-  default     = {}
-}
-
-
-variable "policy_version" {
-  description = "Version of the IAM policy"
-  type        = string
-  default     = "2012-10-17"
-}
-
-variable "effect_allow" {
-  description = "Allow effect for IAM policies"
-  type        = string
-  default     = "Allow"
-}
-
-variable "all_resources" {
-  description = "Wildcard for all resources"
-  type        = string
-  default     = "*"
 }

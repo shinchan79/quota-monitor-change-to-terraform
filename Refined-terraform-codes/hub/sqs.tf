@@ -29,7 +29,7 @@ module "sqs" {
         ]
       })
 
-      tags = var.tags
+      tags = local.merged_tags
     }
 
     sns_publisher_dlq = {
@@ -55,7 +55,7 @@ module "sqs" {
         ]
       })
 
-      tags = var.tags
+      tags = local.merged_tags
     }
 
     summarizer_event_queue = {
@@ -90,7 +90,7 @@ module "sqs" {
         ]
       })
 
-      tags = var.tags
+      tags = local.merged_tags
     }
 
     reporter_dlq = {
@@ -116,7 +116,7 @@ module "sqs" {
         ]
       })
 
-      tags = var.tags
+      tags = local.merged_tags
     }
 
     deployment_manager_dlq = {
@@ -142,41 +142,7 @@ module "sqs" {
         ]
       })
 
-      tags = var.tags
-    }
-  }
-}
-
-variable "sqs_queues_config" {
-  description = "Configuration for SQS queues"
-  type = map(object({
-    name                = string
-    visibility_timeout  = optional(number)
-    actions             = string
-    eventbridge_actions = optional(list(string))
-  }))
-  default = {
-    slack_notifier_dlq = {
-      name    = "SlackNotifier-Lambda-DLQ"
-      actions = "sqs:*"
-    }
-    sns_publisher_dlq = {
-      name    = "SNSPublisher-Lambda-DLQ"
-      actions = "sqs:*"
-    }
-    summarizer_event_queue = {
-      name                = "Summarizer-EventQueue"
-      visibility_timeout  = 60
-      actions             = "sqs:*"
-      eventbridge_actions = ["sqs:SendMessage", "sqs:GetQueueAttributes", "sqs:GetQueueUrl"]
-    }
-    reporter_dlq = {
-      name    = "Reporter-Lambda-DLQ"
-      actions = "sqs:*"
-    }
-    deployment_manager_dlq = {
-      name    = "DeploymentManager-Lambda-DLQ"
-      actions = "sqs:*"
+      tags = local.merged_tags
     }
   }
 }

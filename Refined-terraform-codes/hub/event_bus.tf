@@ -27,23 +27,9 @@ module "event_bus" {
           }
         ]
       })
-      tags = {
+      tags = merge({
         Name = var.event_bus_config.bus_name
-      }
+      }, local.merged_tags)
     }
-  }
-}
-
-variable "event_bus_config" {
-  description = "Configuration for EventBridge event bus"
-  type = object({
-    bus_name      = string
-    policy_sid    = string
-    resource_name = string
-  })
-  default = {
-    bus_name      = "QuotaMonitorBus"
-    policy_sid    = "AllowPutEvents"
-    resource_name = "qm-QuotaMonitorBus"
   }
 }
