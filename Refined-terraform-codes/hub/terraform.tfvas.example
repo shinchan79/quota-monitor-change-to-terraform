@@ -1,0 +1,404 @@
+#---------------------------------------------------------------
+# General Configuration
+#---------------------------------------------------------------
+master_prefix = "qm"
+regions_list  = "us-east-1,us-west-2"
+management_account_id = "123456789012"
+
+#---------------------------------------------------------------
+# Tags Configuration
+#---------------------------------------------------------------
+tags = {
+  Environment = "Production"
+  Project     = "QuotaMonitor"
+}
+
+additional_tags = {
+  Owner       = "Platform Team"
+  CostCenter  = "123456"
+}
+
+#---------------------------------------------------------------
+# VPC Configuration
+#---------------------------------------------------------------
+vpc_config = {
+  security_group_ids = ["sg-xxxxxxxxxxxxxx"]
+  subnet_ids         = ["subnet-xxxxxxxxxxxxxx", "subnet-yyyyyyyyyyyyyy"]
+}
+
+#---------------------------------------------------------------
+# Notifications Configuration
+#---------------------------------------------------------------
+slack_notification = "Yes"  # "Yes" or "No"
+enable_email       = true
+sns_emails         = ["user1@example.com", "user2@example.com"]
+
+#---------------------------------------------------------------
+# Monitoring Configuration
+#---------------------------------------------------------------
+sagemaker_monitoring = "No"  # "Yes" or "No"
+connect_monitoring   = "No"  # "Yes" or "No"
+
+#---------------------------------------------------------------
+# KMS Configuration
+#---------------------------------------------------------------
+create_kms = true  # Set to false to use existing KMS
+existing_kms_arn = null  # Specify if create_kms = false
+
+kms_config = {
+  key = {
+    description     = "CMK for AWS resources provisioned by Quota Monitor in this account"
+    deletion_window = 7
+    enable_rotation = true
+    alias           = "alias/CMK-KMS-Hub"
+  }
+  policy = {
+    version               = "2012-10-17"
+    effect_allow          = "Allow"
+    all_resources         = "*"
+    iam_sid               = "Enable IAM User Permissions"
+    eventbridge_sid       = "Allow EventBridge Service"
+    eventbridge_principal = "events.amazonaws.com"
+    admin_actions         = "kms:*"
+    eventbridge_actions   = [
+      "kms:Decrypt",
+      "kms:Encrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*"
+    ]
+  }
+}
+
+#---------------------------------------------------------------
+# SNS Configuration
+#---------------------------------------------------------------
+create_sns = true  # Set to false to use existing SNS
+existing_sns_arn = null  # Specify if create_sns = false
+
+sns_config = {
+  publisher = {
+    name     = "SNSPublisher-Topic"
+    protocol = "email"
+  }
+}
+
+#---------------------------------------------------------------
+# DynamoDB Configuration
+#---------------------------------------------------------------
+dynamodb_config = {
+  table_name    = "QuotaMonitor-Table"
+  hash_key      = "MessageId"
+  range_key     = "TimeStamp"
+  ttl_attribute = "ExpiryTime"
+}
+
+#---------------------------------------------------------------
+# Deployment Configuration
+#---------------------------------------------------------------
+deployment_model              = "SPOKE_REGION"  # or "SPOKE_ACCOUNT"
+sns_spoke_region             = "us-east-1"
+region_concurrency           = "SEQUENTIAL"  # or "PARALLEL"
+max_concurrent_percentage    = 100
+failure_tolerance_percentage = 0
+enable_account_deploy        = true
+account_deployment           = false
+
+#---------------------------------------------------------------
+# Service Quotas Configuration
+#---------------------------------------------------------------
+sq_notification_threshold   = 80
+sq_monitoring_frequency    = 5
+sq_report_ok_notifications = false
+
+#---------------------------------------------------------------
+# Event Bus Configuration
+#---------------------------------------------------------------
+event_bus_config = {
+  bus_name      = "QuotaMonitorBus"
+  policy_sid    = "AllowPutEvents"
+  resource_name = "qm-QuotaMonitorBus"
+}
+
+#---------------------------------------------------------------
+# Event Rules Configuration
+#---------------------------------------------------------------
+event_rules_config = {
+  sns_publisher = {
+    name                      = "SNSPublisher-EventsRule"
+    description               = "SO0005 quota-monitor-for-aws - QM-SNSPublisherFunction-EventsRule"
+    target_id                 = "Target0"
+    status                    = ["WARN", "ERROR"]
+    detail_type_notifications = ["Trusted Advisor Check Item Refresh Notification", "Service Quotas Utilization Notification"]
+    event_sources             = ["aws.trustedadvisor", "aws-solutions.quota-monitor"]
+    tags                      = {
+      Rule = "SNSPublisher"
+    }
+  }
+  summarizer = {
+    name                      = "Summarizer-EventQueue-Rule"
+    description               = "SO0005 quota-monitor-for-aws - QM-Summarizer-EventQueue-EventsRule"
+    target_id                 = "Target0"
+    status                    = ["OK", "WARN", "ERROR"]
+    detail_type_notifications = ["Trusted Advisor Check Item Refresh Notification", "Service Quotas Utilization Notification"]
+    event_sources             = ["aws.trustedadvisor", "aws-solutions.quota-monitor"]
+    tags                      = {
+      Rule = "Summarizer"
+    }
+  }
+  reporter = {
+    name        = "Reporter-EventsRule"
+    description = "SO0005 quota-monitor-for-aws - QM-Reporter-EventsRule"
+    schedule    = "rate(5 minutes)"
+    target_id   = "Target0"
+    tags        = {
+      Rule = "Reporter"
+    }
+  }
+  deployment_manager = {
+    name        = "Deployment-Manager-EventsRule"
+    description = "SO0005 quota-monitor-for-aws - QM-Deployment-Manager-EventsRule"
+    target_id   = "Target0"
+    tags        = {
+      Rule = "DeploymentManager"
+    }
+  }
+}
+
+#---------------------------------------------------------------
+# Lambda Functions Configuration
+#---------------------------------------------------------------
+lambda_functions_config = {
+  provider_framework = {
+    name        = "Helper-Provider-Framework"
+    description = "AWS CDK resource provider framework"
+    runtime     = "nodejs18.x"
+    handler     = "framework.onEvent"
+    timeout     = 900
+    memory_size = 128
+    s3_bucket   = "your-bucket-name"
+    s3_key      = "your-lambda-code.zip"
+    log_format  = "JSON"
+    log_group   = "/aws/lambda/Helper-Provider-Framework"
+    log_level   = "INFO"
+    tags        = {
+      Function = "ProviderFramework"
+    }
+  }
+  
+  sns_publisher = {
+    name                  = "SNSPublisher-Lambda"
+    description           = "SO0005 quota-monitor-for-aws - QM-SNSPublisherFunction-Lambda"
+    runtime               = "nodejs18.x"
+    handler               = "index.handler"
+    timeout               = 60
+    memory_size           = 128
+    s3_bucket             = "your-bucket-name"
+    s3_key                = "your-lambda-code.zip"
+    log_format            = "JSON"
+    log_group             = "/aws/lambda/SNSPublisher-Lambda"
+    log_level             = "INFO"
+    environment_log_level = "info"
+    sdk_user_agent        = "AwsSolution/SO0005/v6.3.0"
+    app_version           = "v6.3.0"
+    solution_id           = "SO0005"
+    max_event_age         = 14400
+    lambda_qualifier      = "$LATEST"
+    tags                  = {
+      Function = "SNSPublisher"
+    }
+  }
+
+  reporter = {
+    name                  = "Reporter-Lambda"
+    description           = "SO0005 quota-monitor-for-aws - QM-Reporter-Lambda"
+    runtime               = "nodejs18.x"
+    handler               = "index.handler"
+    timeout               = 10
+    memory_size           = 512
+    s3_bucket             = "your-bucket-name"
+    s3_key                = "your-lambda-code.zip"
+    log_format            = "JSON"
+    log_group             = "/aws/lambda/Reporter-Lambda"
+    log_level             = "INFO"
+    max_messages          = "10"
+    max_loops             = "10"
+    environment_log_level = "info"
+    sdk_user_agent        = "AwsSolution/SO0005/v6.3.0"
+    app_version           = "v6.3.0"
+    solution_id           = "SO0005"
+    max_event_age         = 14400
+    lambda_qualifier      = "$LATEST"
+    tags                  = {
+      Function = "Reporter"
+    }
+  }
+
+  deployment_manager = {
+    name                  = "DeploymentManager-Lambda"
+    description           = "SO0005 quota-monitor-for-aws - QM-Deployment-Manager-Lambda"
+    runtime               = "nodejs18.x"
+    handler               = "index.handler"
+    timeout               = 60
+    memory_size           = 512
+    s3_bucket             = "your-bucket-name"
+    s3_key                = "your-lambda-code.zip"
+    log_format            = "JSON"
+    log_group             = "/aws/lambda/DeploymentManager-Lambda"
+    log_level             = "INFO"
+    environment_log_level = "info"
+    sdk_user_agent        = "AwsSolution/SO0005/v6.3.0"
+    app_version           = "v6.3.0"
+    solution_id           = "SO0005"
+    max_event_age         = 14400
+    lambda_qualifier      = "$LATEST"
+    tags                  = {
+      Function = "DeploymentManager"
+    }
+  }
+}
+
+#---------------------------------------------------------------
+# SQS Configuration
+#---------------------------------------------------------------
+sqs_queues_config = {
+  slack_notifier_dlq = {
+    name    = "SlackNotifier-Lambda-DLQ"
+    actions = "sqs:*"
+  }
+  sns_publisher_dlq = {
+    name    = "SNSPublisher-Lambda-DLQ"
+    actions = "sqs:*"
+  }
+  summarizer_event_queue = {
+    name                = "Summarizer-EventQueue"
+    visibility_timeout  = 60
+    actions             = "sqs:*"
+    eventbridge_actions = ["sqs:SendMessage", "sqs:GetQueueAttributes", "sqs:GetQueueUrl"]
+  }
+  reporter_dlq = {
+    name    = "Reporter-Lambda-DLQ"
+    actions = "sqs:*"
+  }
+  deployment_manager_dlq = {
+    name    = "DeploymentManager-Lambda-DLQ"
+    actions = "sqs:*"
+  }
+}
+
+#---------------------------------------------------------------
+# SSM Parameters Configuration
+#---------------------------------------------------------------
+ssm_parameters_config = {
+  slack_webhook = {
+    name        = "/QuotaMonitor/SlackHook"
+    description = "Slack Hook URL to send Quota Monitor events"
+    type        = "String"
+    tags        = {
+      Service = "Slack"
+    }
+  }
+  organizational_units = {
+    name        = "/QuotaMonitor/OUs"
+    description = "List of target Organizational Units"
+    type        = "StringList"
+    tags        = {
+      Service = "Organizations"
+    }
+  }
+  target_accounts = {
+    name        = "/QuotaMonitor/Accounts"
+    description = "List of target Accounts"
+    type        = "StringList"
+    tags        = {
+      Service = "Organizations"
+    }
+  }
+  notification_muting = {
+    name        = "/QuotaMonitor/NotificationConfiguration"
+    description = "Muting configuration for services"
+    type        = "StringList"
+    tags        = {
+      Service = "Notifications"
+    }
+  }
+  regions_list = {
+    name        = "/QuotaMonitor/RegionsToDeploy"
+    description = "List of regions to deploy spoke resources"
+    type        = "StringList"
+    tags        = {
+      Service = "Deployment"
+    }
+  }
+}
+
+#---------------------------------------------------------------
+# Lambda Layer Configuration
+#---------------------------------------------------------------
+lambda_layer_config = {
+  layer = {
+    name     = "Utils-Layer"
+    runtimes = ["nodejs18.x"]
+  }
+  code = {
+    s3_bucket = "your-bucket-name"
+    s3_key    = "your-layer-code.zip"
+  }
+}
+
+#---------------------------------------------------------------
+# Lambda Permissions Configuration
+#---------------------------------------------------------------
+lambda_permissions_config = {
+  sns_publisher = {
+    statement_id = "AllowEventBridgeInvoke"
+    action       = "lambda:InvokeFunction"
+    principal    = "events.amazonaws.com"
+  }
+  reporter = {
+    statement_id = "AllowEventBridgeInvoke"
+    action       = "lambda:InvokeFunction"
+    principal    = "events.amazonaws.com"
+  }
+  deployment_manager = {
+    statement_id = "AllowEventBridgeInvoke"
+    action       = "lambda:InvokeFunction"
+    principal    = "events.amazonaws.com"
+  }
+}
+
+#---------------------------------------------------------------
+# Helper Lambda Configuration
+#---------------------------------------------------------------
+helper_config = {
+  lambda_function = {
+    name        = "Helper-Function"
+    description = "SO0005 quota-monitor-for-aws - QM-Helper-Function"
+    runtime     = "nodejs18.x"
+    handler     = "index.handler"
+    timeout     = 5
+    memory_size = 128
+    tags        = {
+      Function = "Helper"
+    }
+  }
+  lambda_code = {
+    s3_bucket = "your-bucket-name"
+    s3_key    = "your-lambda-code.zip"
+  }
+  lambda_environment = {
+    stack_id       = "quota-monitor-hub"
+    sdk_user_agent = "AwsSolution/SO0005/v6.3.0"
+    version        = "v6.3.0"
+    solution_id    = "SO0005"
+  }
+  lambda_event = {
+    max_event_age = 14400
+    qualifier     = "$LATEST"
+  }
+  lambda_logging = {
+    log_level     = "info"
+    log_format    = "JSON"
+    log_group     = "/aws/lambda/QuotaMonitor-Helper"
+    logging_level = "INFO"
+  }
+}
