@@ -6,19 +6,19 @@ module "dynamodb" {
 
   create_dynamodb = true
   dynamodb_tables = {
-    quota_monitor = {
-      name         = var.dynamodb_config.table_name
-      billing_mode = "PAY_PER_REQUEST"
-      hash_key     = var.dynamodb_config.hash_key
-      range_key    = var.dynamodb_config.range_key
+    for key, table in var.dynamodb_config : key => {
+      name         = table.table_name
+      billing_mode = table.billing_mode
+      hash_key     = table.hash_key
+      range_key    = table.range_key
 
       attributes = [
         {
-          name = var.dynamodb_config.hash_key
+          name = table.hash_key
           type = "S"
         },
         {
-          name = var.dynamodb_config.range_key
+          name = table.range_key
           type = "S"
         }
       ]
@@ -32,14 +32,14 @@ module "dynamodb" {
 
       ttl = {
         enabled        = true
-        attribute_name = var.dynamodb_config.ttl_attribute
+        attribute_name = table.ttl_attribute
       }
 
       deletion_protection_enabled = true
 
       tags = merge(
         {
-          Name = var.dynamodb_config.table_name
+          Name = table.table_name
         },
         local.merged_tags
       )

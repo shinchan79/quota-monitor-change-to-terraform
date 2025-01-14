@@ -1,39 +1,44 @@
 # DynamoDB 
-
 variable "dynamodb_config" {
-  description = "Configuration for DynamoDB table"
-  type = object({
+  description = "Configuration for DynamoDB tables"
+  type = map(object({
     table_name    = string
+    billing_mode  = string
     hash_key      = string
     range_key     = string
     ttl_attribute = string
-  })
+  }))
   default = {
-    table_name    = "QuotaMonitor-Table"
-    hash_key      = "MessageId"
-    range_key     = "TimeStamp"
-    ttl_attribute = "ExpiryTime"
+    quota_monitor = {
+      table_name    = "QuotaMonitor-Table"
+      billing_mode  = "PAY_PER_REQUEST"
+      hash_key      = "MessageId"
+      range_key     = "TimeStamp"
+      ttl_attribute = "ExpiryTime"
+    }
   }
 }
 
 # Event bus
-
+# Event bus
 variable "event_bus_config" {
-  description = "Configuration for EventBridge event bus"
-  type = object({
+  description = "Configuration for EventBridge event buses"
+  type = map(object({
     bus_name      = string
     policy_sid    = string
     resource_name = string
-  })
+  }))
   default = {
-    bus_name      = "QuotaMonitorBus"
-    policy_sid    = "AllowPutEvents"
-    resource_name = "qm-QuotaMonitorBus"
+    quota_monitor = {
+      bus_name      = "QuotaMonitorBus"
+      policy_sid    = "AllowPutEvents"
+      resource_name = "qm-QuotaMonitorBus"
+    }
   }
 }
 
 
-
+#....
 variable "vpc_config" {
   description = "VPC configuration for Lambda function"
   type = object({
@@ -332,10 +337,9 @@ variable "kms_config" {
 }
 
 # Lambda layer
-
 variable "lambda_layer_config" {
-  description = "Configuration for Lambda Layer"
-  type = object({
+  description = "Configuration for Lambda Layers"
+  type = map(object({
     layer = object({
       name     = string
       runtimes = list(string)
@@ -344,15 +348,17 @@ variable "lambda_layer_config" {
       s3_bucket = string
       s3_key    = string
     })
-  })
+  }))
   default = {
-    layer = {
-      name     = "QM-UtilsLayer"
-      runtimes = ["nodejs18.x"]
-    }
-    code = {
-      s3_bucket = "immersionday-aaaa-jjjj"
-      s3_key    = "test-aws-myApplication.zip"
+    utils = {
+      layer = {
+        name     = "QM-UtilsLayer"
+        runtimes = ["nodejs18.x"]
+      }
+      code = {
+        s3_bucket = "immersionday-aaaa-jjjj"
+        s3_key    = "test-aws-myApplication.zip"
+      }
     }
   }
 }

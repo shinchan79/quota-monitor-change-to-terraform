@@ -6,12 +6,12 @@ module "lambda_layer" {
 
   create_lambda_layer = true
   lambda_layers = {
-    utils = {
-      name                = var.lambda_layer_config.layer.name
-      compatible_runtimes = var.lambda_layer_config.layer.runtimes
+    for key, layer in var.lambda_layer_config : key => {
+      name                = layer.layer.name
+      compatible_runtimes = layer.layer.runtimes
       filename = {
-        s3_bucket = var.lambda_layer_config.code.s3_bucket
-        s3_key    = var.lambda_layer_config.code.s3_key
+        s3_bucket = layer.code.s3_bucket
+        s3_key    = layer.code.s3_key
       }
     }
   }
