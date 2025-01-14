@@ -274,6 +274,17 @@ variable "tags" {
 }
 
 # KMS
+variable "create_kms" {
+  description = "Whether to create KMS key"
+  type        = bool
+  default     = true
+}
+
+variable "existing_kms_arn" {
+  description = "Existing KMS key ARN to use if create_kms is false"
+  type        = string
+  default     = null
+}
 
 variable "kms_config" {
   description = "Configuration for KMS resources"
@@ -480,6 +491,18 @@ variable "lambda_functions_config" {
 }
 
 # SNS
+variable "create_sns" {
+  description = "Whether to create SNS topics"
+  type        = bool
+  default     = true
+}
+
+variable "existing_sns_arn" {
+  description = "Existing SNS topic ARN to use if create_sns is false"
+  type        = string
+  default     = null
+}
+
 variable "sns_config" {
   description = "Configuration for SNS topics"
   type = map(object({

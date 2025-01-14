@@ -1,10 +1,11 @@
 module "kms" {
   source = "../modules"
 
-  create        = true
+  create        = var.create_kms
   master_prefix = "qm"
-  create_kms    = true
-  kms_keys = {
+  create_kms    = var.create_kms
+
+  kms_keys = var.create_kms ? {
     qm_encryption = {
       description             = var.kms_config.key.description
       deletion_window_in_days = var.kms_config.key.deletion_window
@@ -35,7 +36,12 @@ module "kms" {
         ]
       }
 
-      tags = local.merged_tags
+      tags = merge(
+        {
+          Name = var.kms_config.key.alias
+        },
+        local.merged_tags
+      )
     }
-  }
+  } : {}
 }
