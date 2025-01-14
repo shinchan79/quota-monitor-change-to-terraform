@@ -41,9 +41,9 @@ module "lambda_permissions" {
   source = "../modules"
 
   create                   = true
-  create_lambda           = true
+  create_lambda            = true
   create_lambda_permission = true
-  master_prefix           = "qm"
+  master_prefix            = "qm"
 
   lambda_permissions = {
     sns_publisher = {

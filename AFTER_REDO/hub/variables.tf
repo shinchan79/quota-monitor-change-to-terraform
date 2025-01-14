@@ -88,7 +88,7 @@ variable "sq_report_ok_notifications" {
   default     = false
 }
 
-variable "enable_account_deploy"{
-  type = bool
+variable "enable_account_deploy" {
+  type    = bool
   default = true
 }

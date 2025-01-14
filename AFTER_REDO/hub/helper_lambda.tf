@@ -71,8 +71,8 @@ module "helper_lambda" {
       memory_size = var.helper_memory_size
       role_arn    = module.iam.iam_role_arns["lambda_helper"]
 
-      s3_bucket = var.helper_s3_bucket
-      s3_key    = var.helper_s3_key
+      s3_bucket          = var.helper_s3_bucket
+      s3_key             = var.helper_s3_key
       security_group_ids = var.vpc_config.security_group_ids
       subnet_ids         = var.vpc_config.subnet_ids
 
@@ -82,16 +82,16 @@ module "helper_lambda" {
 
       environment_variables = {
         METRICS_ENDPOINT      = local.quota_monitor_map.Metrics.MetricsEndpoint
-        SEND_METRIC          = local.quota_monitor_map.Metrics.SendAnonymizedData
-        QM_STACK_ID          = var.helper_stack_id
+        SEND_METRIC           = local.quota_monitor_map.Metrics.SendAnonymizedData
+        QM_STACK_ID           = var.helper_stack_id
         QM_SLACK_NOTIFICATION = var.slack_notification
         QM_EMAIL_NOTIFICATION = var.enable_email ? "Yes" : "No"
         SAGEMAKER_MONITORING  = var.sagemaker_monitoring
         CONNECT_MONITORING    = var.connect_monitoring
-        LOG_LEVEL            = var.helper_log_level
+        LOG_LEVEL             = var.helper_log_level
         CUSTOM_SDK_USER_AGENT = var.helper_sdk_user_agent
-        VERSION              = var.helper_version
-        SOLUTION_ID          = var.helper_solution_id
+        VERSION               = var.helper_version
+        SOLUTION_ID           = var.helper_solution_id
       }
 
       event_invoke_config = {

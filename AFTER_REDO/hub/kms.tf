@@ -78,7 +78,7 @@ module "kms" {
             Principal = {
               Service = var.eventbridge_service_principal
             }
-            Action = var.kms_eventbridge_actions
+            Action   = var.kms_eventbridge_actions
             Resource = var.all_resources
           }
         ]
@@ -142,7 +142,7 @@ variable "kms_admin_actions" {
 variable "kms_eventbridge_actions" {
   description = "KMS actions for EventBridge service"
   type        = list(string)
-  default     = [
+  default = [
     "kms:Decrypt",
     "kms:Encrypt",
     "kms:ReEncrypt*",

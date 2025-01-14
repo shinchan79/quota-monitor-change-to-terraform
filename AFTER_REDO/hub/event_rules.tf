@@ -118,7 +118,7 @@ module "event_rule" {
       name           = var.sns_publisher_rule_name
       description    = var.sns_publisher_rule_description
       event_bus_name = module.event_bus.eventbridge_bus_names["quota_monitor"]
-      state         = "ENABLED"
+      state          = "ENABLED"
 
       event_pattern = jsonencode({
         detail = {
@@ -142,7 +142,7 @@ module "event_rule" {
       name           = var.summarizer_rule_name
       description    = var.summarizer_rule_description
       event_bus_name = module.event_bus.eventbridge_bus_names["quota_monitor"]
-      state         = "ENABLED"
+      state          = "ENABLED"
 
       event_pattern = jsonencode({
         detail = {
@@ -166,7 +166,7 @@ module "event_rule" {
       name                = var.reporter_rule_name
       description         = var.reporter_rule_description
       schedule_expression = var.reporter_schedule
-      state              = "ENABLED"
+      state               = "ENABLED"
 
       targets = [
         {

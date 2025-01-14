@@ -6,19 +6,19 @@ locals {
     }
     SSMParameters = {
       SlackHook                = "/QuotaMonitor/SlackHook"
-      OrganizationalUnits      = "/QuotaMonitor/OUs"  
+      OrganizationalUnits      = "/QuotaMonitor/OUs"
       Accounts                 = "/QuotaMonitor/Accounts"
       NotificationMutingConfig = "/QuotaMonitor/NotificationConfiguration"
-      RegionsList             = "/QuotaMonitor/RegionsToDeploy"
+      RegionsList              = "/QuotaMonitor/RegionsToDeploy"
     }
   }
 
   # Add conditions equivalent
   conditions = {
-    email_true_condition = var.sns_email != ""
-    slack_true_condition = var.slack_notification == "Yes"
+    email_true_condition     = var.sns_email != ""
+    slack_true_condition     = var.slack_notification == "Yes"
     account_deploy_condition = var.deployment_model == "Hybrid"
-    is_china_partition = data.aws_partition.current.partition == "aws-cn"
+    is_china_partition       = data.aws_partition.current.partition == "aws-cn"
   }
 
   # Add supported regions list if needed

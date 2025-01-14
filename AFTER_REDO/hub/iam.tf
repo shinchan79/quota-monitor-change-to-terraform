@@ -832,7 +832,7 @@ module "iam" {
             {
               Effect = "Allow"
               Action = "cloudformation:DescribeStackSet"
-              Resource = [for stack in ["${var.master_prefix}-TA-Spoke-StackSet", "${var.master_prefix}-SQ-Spoke-StackSet", "${var.master_prefix}-SNS-Spoke-StackSet"] : 
+              Resource = [for stack in ["${var.master_prefix}-TA-Spoke-StackSet", "${var.master_prefix}-SQ-Spoke-StackSet", "${var.master_prefix}-SNS-Spoke-StackSet"] :
                 "arn:${data.aws_partition.current.partition}:cloudformation:*:${var.management_account_id}:stackset/${stack}:*"
               ]
             },
@@ -854,13 +854,13 @@ module "iam" {
               ])
             },
             {
-              Effect = "Allow"
-              Action = "ec2:DescribeRegions"
+              Effect   = "Allow"
+              Action   = "ec2:DescribeRegions"
               Resource = "*"
             },
             {
-              Effect = "Allow"
-              Action = "support:DescribeTrustedAdvisorChecks"
+              Effect   = "Allow"
+              Action   = "support:DescribeTrustedAdvisorChecks"
               Resource = "*"
             }
           ]

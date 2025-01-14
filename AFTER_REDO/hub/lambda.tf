@@ -339,13 +339,13 @@ module "lambda" {
 
       environment_variables = {
         QUOTA_TABLE           = module.dynamodb.dynamodb_table_ids["quota_monitor"]
-        SQS_URL              = module.sqs.sqs_queue_urls["summarizer_event_queue"]
-        MAX_MESSAGES         = var.reporter_max_messages
-        MAX_LOOPS           = var.reporter_max_loops
-        LOG_LEVEL           = var.environment_log_level
+        SQS_URL               = module.sqs.sqs_queue_urls["summarizer_event_queue"]
+        MAX_MESSAGES          = var.reporter_max_messages
+        MAX_LOOPS             = var.reporter_max_loops
+        LOG_LEVEL             = var.environment_log_level
         CUSTOM_SDK_USER_AGENT = var.sdk_user_agent
-        VERSION             = var.app_version
-        SOLUTION_ID         = var.solution_id
+        VERSION               = var.app_version
+        SOLUTION_ID           = var.solution_id
       }
 
       event_invoke_config = {
@@ -392,26 +392,26 @@ module "lambda" {
 
       environment_variables = {
         EVENT_BUS_NAME               = module.event_bus.eventbridge_bus_names["quota_monitor"]
-        EVENT_BUS_ARN               = module.event_bus.eventbridge_bus_arns["quota_monitor"]
-        QM_OU_PARAMETER             = module.ssm_parameter.ssm_parameter_names["organizational_units"]
-        QM_ACCOUNT_PARAMETER        = var.enable_account_deploy ? module.ssm_parameter.ssm_parameter_names["target_accounts"] : null
-        DEPLOYMENT_MODEL            = var.deployment_model
-        REGIONS_LIST               = var.regions_list
-        QM_REGIONS_LIST_PARAMETER   = module.ssm_parameter.ssm_parameter_names["regions_list"]
-        SNS_SPOKE_REGION            = var.sns_spoke_region
-        REGIONS_CONCURRENCY_TYPE    = var.region_concurrency
-        MAX_CONCURRENT_PERCENTAGE   = var.max_concurrent_percentage
+        EVENT_BUS_ARN                = module.event_bus.eventbridge_bus_arns["quota_monitor"]
+        QM_OU_PARAMETER              = module.ssm_parameter.ssm_parameter_names["organizational_units"]
+        QM_ACCOUNT_PARAMETER         = var.enable_account_deploy ? module.ssm_parameter.ssm_parameter_names["target_accounts"] : null
+        DEPLOYMENT_MODEL             = var.deployment_model
+        REGIONS_LIST                 = var.regions_list
+        QM_REGIONS_LIST_PARAMETER    = module.ssm_parameter.ssm_parameter_names["regions_list"]
+        SNS_SPOKE_REGION             = var.sns_spoke_region
+        REGIONS_CONCURRENCY_TYPE     = var.region_concurrency
+        MAX_CONCURRENT_PERCENTAGE    = var.max_concurrent_percentage
         FAILURE_TOLERANCE_PERCENTAGE = var.failure_tolerance_percentage
-        SQ_NOTIFICATION_THRESHOLD   = var.sq_notification_threshold
-        SQ_MONITORING_FREQUENCY     = var.sq_monitoring_frequency
-        SQ_REPORT_OK_NOTIFICATIONS  = var.sq_report_ok_notifications
-        SOLUTION_UUID               = module.helper_lambda.lambda_function_arns["helper"]
-        METRICS_ENDPOINT            = local.quota_monitor_map.Metrics.MetricsEndpoint
-        SEND_METRIC                = local.quota_monitor_map.Metrics.SendAnonymizedData
-        LOG_LEVEL                  = var.environment_log_level
-        CUSTOM_SDK_USER_AGENT      = var.sdk_user_agent
-        VERSION                    = var.app_version
-        SOLUTION_ID                = var.solution_id
+        SQ_NOTIFICATION_THRESHOLD    = var.sq_notification_threshold
+        SQ_MONITORING_FREQUENCY      = var.sq_monitoring_frequency
+        SQ_REPORT_OK_NOTIFICATIONS   = var.sq_report_ok_notifications
+        SOLUTION_UUID                = module.helper_lambda.lambda_function_arns["helper"]
+        METRICS_ENDPOINT             = local.quota_monitor_map.Metrics.MetricsEndpoint
+        SEND_METRIC                  = local.quota_monitor_map.Metrics.SendAnonymizedData
+        LOG_LEVEL                    = var.environment_log_level
+        CUSTOM_SDK_USER_AGENT        = var.sdk_user_agent
+        VERSION                      = var.app_version
+        SOLUTION_ID                  = var.solution_id
       }
 
       event_invoke_config = {
