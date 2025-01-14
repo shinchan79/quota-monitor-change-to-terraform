@@ -2,7 +2,7 @@ module "sqs" {
   source = "../modules"
 
   create        = true
-  master_prefix = "qm"
+  master_prefix = var.master_prefix
 
   create_sqs = true
   sqs_queue = {

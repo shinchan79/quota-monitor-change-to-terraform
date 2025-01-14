@@ -2,7 +2,7 @@ module "lambda_layer" {
   source = "../modules"
 
   create        = true
-  master_prefix = "qm"
+  master_prefix = var.master_prefix
 
   create_lambda_layer = true
   lambda_layers = {

@@ -2,7 +2,7 @@ module "sns" {
   source = "../modules"
 
   create        = var.create_sns
-  master_prefix = "qm"
+  master_prefix = var.master_prefix
   create_sns    = var.create_sns
 
   sns_topics = var.create_sns ? {

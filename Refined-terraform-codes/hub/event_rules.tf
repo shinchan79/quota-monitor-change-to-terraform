@@ -2,7 +2,7 @@ module "event_rule" {
   source = "../modules"
 
   create        = true
-  master_prefix = "qm"
+  master_prefix = var.master_prefix
 
   event_rules = {
     sns_publisher = {

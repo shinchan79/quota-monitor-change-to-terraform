@@ -2,7 +2,7 @@ module "helper_lambda" {
   source = "../modules"
 
   create        = true
-  master_prefix = "qm"
+  master_prefix = var.master_prefix
 
   lambda_functions = {
     helper = {

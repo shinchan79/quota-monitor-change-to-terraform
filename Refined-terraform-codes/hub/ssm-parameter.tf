@@ -2,7 +2,7 @@ module "ssm_parameter" {
   source = "../modules"
 
   create               = true
-  master_prefix        = "qm"
+  master_prefix        = var.master_prefix
   create_ssm_parameter = true
 
   ssm_parameters = {

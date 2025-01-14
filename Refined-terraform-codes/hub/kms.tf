@@ -2,7 +2,7 @@ module "kms" {
   source = "../modules"
 
   create        = var.create_kms
-  master_prefix = "qm"
+  master_prefix = var.master_prefix
   create_kms    = var.create_kms
 
   kms_keys = var.create_kms ? {

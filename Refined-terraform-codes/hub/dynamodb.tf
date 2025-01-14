@@ -2,7 +2,7 @@ module "dynamodb" {
   source = "../modules"
 
   create        = true
-  master_prefix = "qm"
+  master_prefix = var.master_prefix
 
   create_dynamodb = true
   dynamodb_tables = {

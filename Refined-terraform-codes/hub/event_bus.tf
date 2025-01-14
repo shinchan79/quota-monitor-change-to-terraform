@@ -2,7 +2,7 @@ module "event_bus" {
   source = "../modules"
 
   create        = true
-  master_prefix = "qm"
+  master_prefix = var.master_prefix
 
   create_event = true
   event_buses = {
