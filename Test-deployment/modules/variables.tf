@@ -55,6 +55,10 @@ variable "dynamodb_tables" {
       projection_type    = string
       non_key_attributes = optional(list(string))
     })), [])
+    ttl = optional(object({
+      enabled        = bool
+      attribute_name = string
+    }))
     tags = optional(map(string))
   }))
   default = {}

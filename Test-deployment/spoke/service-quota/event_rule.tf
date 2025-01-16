@@ -15,8 +15,14 @@ module "event_rule" {
         detail = {
           status = ["WARN", "ERROR"]
         }
-        "detail-type" = ["Service Quotas Utilization Notification"]
-        source        = ["aws-solutions.quota-monitor"]
+        "detail-type" = [
+          "Trusted Advisor Check Item Refresh Notification",
+          "Service Quotas Utilization Notification"
+        ]
+        source = [
+          "aws.trustedadvisor",
+          "aws-solutions.quota-monitor"
+        ]
       })
 
       targets = [
@@ -86,8 +92,14 @@ module "event_rule" {
         detail = {
           status = ["OK"]
         }
-        "detail-type" = ["Service Quotas Utilization Notification"]
-        source        = ["aws-solutions.quota-monitor"]
+        "detail-type" = [
+          "Trusted Advisor Check Item Refresh Notification",
+          "Service Quotas Utilization Notification"
+        ]
+        source = [
+          "aws.trustedadvisor",
+          "aws-solutions.quota-monitor"
+        ]
       })
 
       targets = [
@@ -116,8 +128,14 @@ module "event_rule" {
         detail = {
           status = ["WARN"]
         }
-        "detail-type" = ["Service Quotas Utilization Notification"]
-        source        = ["aws-solutions.quota-monitor"]
+        "detail-type" = [
+          "Trusted Advisor Check Item Refresh Notification",
+          "Service Quotas Utilization Notification"
+        ]
+        source = [
+          "aws.trustedadvisor",
+          "aws-solutions.quota-monitor"
+        ]
       })
 
       targets = [
@@ -146,8 +164,14 @@ module "event_rule" {
         detail = {
           status = ["ERROR"]
         }
-        "detail-type" = ["Service Quotas Utilization Notification"]
-        source        = ["aws-solutions.quota-monitor"]
+        "detail-type" = [
+          "Trusted Advisor Check Item Refresh Notification",
+          "Service Quotas Utilization Notification"
+        ]
+        source = [
+          "aws.trustedadvisor",
+          "aws-solutions.quota-monitor"
+        ]
       })
 
       targets = [
@@ -176,8 +200,14 @@ module "event_rule" {
         detail = {
           status = ["WARN", "ERROR"]
         }
-        "detail-type" = ["Service Quotas Utilization Notification"]
-        source        = ["aws-solutions.quota-monitor"]
+        "detail-type" = [
+          "Trusted Advisor Check Item Refresh Notification",
+          "Service Quotas Utilization Notification"
+        ]
+        source = [
+          "aws.trustedadvisor",
+          "aws-solutions.quota-monitor"
+        ]
       })
 
       targets = [

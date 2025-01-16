@@ -45,6 +45,8 @@ module "lambda" {
         CUSTOM_SDK_USER_AGENT                   = var.lambda_functions_config["sns_publisher"].sdk_user_agent
         VERSION                                 = var.lambda_functions_config["sns_publisher"].app_version
         SOLUTION_ID                             = var.lambda_functions_config["sns_publisher"].solution_id
+        SEND_ANONYMOUS_DATA                     = "Yes"
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED     = "1"
       }
 
       event_invoke_config = {
@@ -54,6 +56,12 @@ module "lambda" {
 
       security_group_ids = var.vpc_config.security_group_ids
       subnet_ids         = var.vpc_config.subnet_ids
+
+      tracing_config = {
+        mode = "Active"
+      }
+
+      reserved_concurrent_executions = -1
 
       logging_config = {
         log_format = var.lambda_functions_config["sns_publisher"].log_format
@@ -87,20 +95,27 @@ module "lambda" {
       layers = [module.lambda_layer.lambda_layer_arns["utils_sq_spoke"]]
 
       environment_variables = {
-        SQ_SERVICE_TABLE      = module.dynamodb.dynamodb_table_ids["service"]
-        SQ_QUOTA_TABLE        = module.dynamodb.dynamodb_table_ids["quota"]
-        PARTITION_KEY         = var.partition_key
-        SORT                  = var.sort_key
-        LOG_LEVEL             = var.lambda_functions_config["list_manager"].environment_log_level
-        CUSTOM_SDK_USER_AGENT = var.lambda_functions_config["list_manager"].sdk_user_agent
-        VERSION               = var.lambda_functions_config["list_manager"].app_version
-        SOLUTION_ID           = var.lambda_functions_config["list_manager"].solution_id
+        SQ_SERVICE_TABLE                    = module.dynamodb.dynamodb_table_ids["service"]
+        SQ_QUOTA_TABLE                      = module.dynamodb.dynamodb_table_ids["quota"]
+        PARTITION_KEY                       = var.partition_key
+        SORT                                = var.sort_key
+        LOG_LEVEL                           = var.lambda_functions_config["list_manager"].environment_log_level
+        CUSTOM_SDK_USER_AGENT               = var.lambda_functions_config["list_manager"].sdk_user_agent
+        VERSION                             = var.lambda_functions_config["list_manager"].app_version
+        SOLUTION_ID                         = var.lambda_functions_config["list_manager"].solution_id
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED = "1"
       }
 
       event_invoke_config = {
         maximum_event_age_in_seconds = var.lambda_functions_config["list_manager"].max_event_age
         qualifier                    = var.lambda_functions_config["list_manager"].lambda_qualifier
       }
+
+      tracing_config = {
+        mode = "Active"
+      }
+
+      reserved_concurrent_executions = -1
 
       logging_config = {
         log_format = var.lambda_functions_config["list_manager"].log_format
@@ -135,8 +150,15 @@ module "lambda" {
       subnet_ids         = var.vpc_config.subnet_ids
 
       environment_variables = {
-        USER_ON_EVENT_FUNCTION_ARN = local.list_manager_function_arn
+        USER_ON_EVENT_FUNCTION_ARN          = local.list_manager_function_arn
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED = "1"
       }
+
+      tracing_config = {
+        mode = "Active"
+      }
+
+      reserved_concurrent_executions = -1
 
       logging_config = {
         log_format = var.lambda_functions_config["list_manager_provider"].log_format
@@ -174,16 +196,17 @@ module "lambda" {
       layers = [module.lambda_layer.lambda_layer_arns["utils_sq_spoke"]]
 
       environment_variables = {
-        SQ_SERVICE_TABLE           = module.dynamodb.dynamodb_table_ids["service"]
-        SQ_QUOTA_TABLE             = module.dynamodb.dynamodb_table_ids["quota"]
-        SPOKE_EVENT_BUS            = module.event_bus.eventbridge_bus_names["quota_monitor_spoke"]
-        POLLER_FREQUENCY           = var.monitoring_frequency
-        THRESHOLD                  = var.notification_threshold
-        SQ_REPORT_OK_NOTIFICATIONS = var.report_ok_notifications
-        LOG_LEVEL                  = var.lambda_functions_config["qmcw_poller"].environment_log_level
-        CUSTOM_SDK_USER_AGENT      = var.lambda_functions_config["qmcw_poller"].sdk_user_agent
-        VERSION                    = var.lambda_functions_config["qmcw_poller"].app_version
-        SOLUTION_ID                = var.lambda_functions_config["qmcw_poller"].solution_id
+        SQ_SERVICE_TABLE                    = module.dynamodb.dynamodb_table_ids["service"]
+        SQ_QUOTA_TABLE                      = module.dynamodb.dynamodb_table_ids["quota"]
+        SPOKE_EVENT_BUS                     = module.event_bus.eventbridge_bus_names["quota_monitor_spoke"]
+        POLLER_FREQUENCY                    = var.monitoring_frequency
+        THRESHOLD                           = var.notification_threshold
+        SQ_REPORT_OK_NOTIFICATIONS          = var.report_ok_notifications
+        LOG_LEVEL                           = var.lambda_functions_config["qmcw_poller"].environment_log_level
+        CUSTOM_SDK_USER_AGENT               = var.lambda_functions_config["qmcw_poller"].sdk_user_agent
+        VERSION                             = var.lambda_functions_config["qmcw_poller"].app_version
+        SOLUTION_ID                         = var.lambda_functions_config["qmcw_poller"].solution_id
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED = "1"
       }
 
       security_group_ids = var.vpc_config.security_group_ids
@@ -193,6 +216,12 @@ module "lambda" {
         maximum_event_age_in_seconds = var.lambda_functions_config["qmcw_poller"].max_event_age
         qualifier                    = var.lambda_functions_config["qmcw_poller"].lambda_qualifier
       }
+
+      tracing_config = {
+        mode = "Active"
+      }
+
+      reserved_concurrent_executions = -1
 
       logging_config = {
         log_format = var.lambda_functions_config["qmcw_poller"].log_format

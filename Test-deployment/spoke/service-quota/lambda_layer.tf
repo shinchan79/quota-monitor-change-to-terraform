@@ -6,12 +6,16 @@ module "lambda_layer" {
 
   lambda_layers = {
     utils_sns_spoke = {
-      name                = var.lambda_layer_config["utils_sns_spoke"].layer.name
-      compatible_runtimes = var.lambda_layer_config["utils_sns_spoke"].layer.runtimes
+      name                     = var.lambda_layer_config["utils_sns_spoke"].layer.name
+      description              = "Utils Layer for SNS Spoke"
+      compatible_runtimes      = var.lambda_layer_config["utils_sns_spoke"].layer.runtimes
+      compatible_architectures = ["x86_64"]
+
       # Source code logic
       filename  = var.create_s3 ? null : try(var.lambda_layer_config["utils_sns_spoke"].layer.local_source.filename, null)
       s3_bucket = var.create_s3 ? module.s3.s3_bucket_ids["source_code"] : try(var.lambda_layer_config["utils_sns_spoke"].layer.s3_source.bucket, null)
       s3_key    = var.create_s3 ? "layers/utils_sns_spoke.zip" : try(var.lambda_layer_config["utils_sns_spoke"].layer.s3_source.key, null)
+
       tags = merge(
         {
           Name = var.lambda_layer_config["utils_sns_spoke"].layer.name
@@ -21,12 +25,16 @@ module "lambda_layer" {
     }
 
     utils_sq_spoke = {
-      name                = var.lambda_layer_config["utils_sq_spoke"].layer.name
-      compatible_runtimes = var.lambda_layer_config["utils_sq_spoke"].layer.runtimes
+      name                     = var.lambda_layer_config["utils_sq_spoke"].layer.name
+      description              = "Utils Layer for Service Quota Spoke"
+      compatible_runtimes      = var.lambda_layer_config["utils_sq_spoke"].layer.runtimes
+      compatible_architectures = ["x86_64"]
+
       # Source code logic
       filename  = var.create_s3 ? null : try(var.lambda_layer_config["utils_sq_spoke"].layer.local_source.filename, null)
       s3_bucket = var.create_s3 ? module.s3.s3_bucket_ids["source_code"] : try(var.lambda_layer_config["utils_sq_spoke"].layer.s3_source.bucket, null)
       s3_key    = var.create_s3 ? "layers/utils_sq_spoke.zip" : try(var.lambda_layer_config["utils_sq_spoke"].layer.s3_source.key, null)
+
       tags = merge(
         {
           Name = var.lambda_layer_config["utils_sq_spoke"].layer.name

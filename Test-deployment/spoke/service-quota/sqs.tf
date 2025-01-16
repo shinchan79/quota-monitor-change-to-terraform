@@ -10,6 +10,16 @@ module "sqs" {
       name              = var.sqs_queues_config["sns_publisher_dlq"].name
       kms_master_key_id = var.kms_key_arn
 
+      # Additional configurations from CloudFormation template
+      message_retention_seconds   = 345600 # 4 days
+      visibility_timeout_seconds  = 30
+      receive_wait_time_seconds   = 0
+      max_message_size            = 262144
+      delay_seconds               = 0
+      fifo_queue                  = false
+      content_based_deduplication = false
+      sqs_managed_sse_enabled     = true
+
       policy = jsonencode({
         Version = "2012-10-17"
         Statement = [
@@ -35,6 +45,16 @@ module "sqs" {
     qmcw_poller_dlq = {
       name              = var.sqs_queues_config["qmcw_poller_dlq"].name
       kms_master_key_id = var.kms_key_arn
+
+      # Additional configurations from CloudFormation template
+      message_retention_seconds   = 345600 # 4 days
+      visibility_timeout_seconds  = 30
+      receive_wait_time_seconds   = 0
+      max_message_size            = 262144
+      delay_seconds               = 0
+      fifo_queue                  = false
+      content_based_deduplication = false
+      sqs_managed_sse_enabled     = true
 
       policy = jsonencode({
         Version = "2012-10-17"

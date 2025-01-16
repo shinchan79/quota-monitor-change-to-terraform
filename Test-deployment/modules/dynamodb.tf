@@ -40,6 +40,14 @@ resource "aws_dynamodb_table" "table" {
     }
   }
 
+  dynamic "ttl" {
+    for_each = each.value.ttl != null ? [each.value.ttl] : []
+    content {
+      enabled        = ttl.value.enabled
+      attribute_name = ttl.value.attribute_name
+    }
+  }
+
   lifecycle {
     ignore_changes = [
       read_capacity,

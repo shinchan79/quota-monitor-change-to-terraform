@@ -39,6 +39,11 @@ module "dynamodb" {
 
       deletion_protection_enabled = table.deletion_protection_enabled
 
+      ttl = {
+        enabled        = true
+        attribute_name = "ExpiryTime"
+      }
+
       tags = {
         Name = "${var.master_prefix}-${table.name}"
       }
