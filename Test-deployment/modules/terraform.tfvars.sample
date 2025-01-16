@@ -1,0 +1,253 @@
+#---------------------------------------------------------------
+# Common Configuration
+#---------------------------------------------------------------
+create = true
+master_prefix = "qm"
+tags = {
+  Environment = "Production"
+  Project     = "QuotaMonitor"
+}
+
+additional_tags = {
+  Owner       = "Platform Team"
+  CostCenter  = "123456"
+}
+
+#---------------------------------------------------------------
+# DynamoDB Configuration
+#---------------------------------------------------------------
+create_dynamodb = true
+dynamodb_tables = {
+  service = {
+    name           = "ServiceTable"
+    billing_mode   = "PAY_PER_REQUEST"
+    hash_key       = "ServiceCode"
+    stream_enabled = true
+    stream_view_type = "NEW_AND_OLD_IMAGES"
+    attributes = [
+      {
+        name = "ServiceCode"
+        type = "S"
+      }
+    ]
+    server_side_encryption = {
+      enabled = true
+    }
+    point_in_time_recovery_enabled = true
+    deletion_protection_enabled    = false
+  }
+}
+
+#---------------------------------------------------------------
+# EventBridge Configuration
+#---------------------------------------------------------------
+create_event = true
+event_buses = {
+  quota_monitor = {
+    name = "QuotaMonitorBus"
+    policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "*"
+      },
+      "Action": "events:PutEvents",
+      "Resource": "arn:aws:events:*:*:event-bus/QuotaMonitorBus"
+    }
+  ]
+}
+POLICY
+  }
+}
+
+#---------------------------------------------------------------
+# IAM Role Configuration
+#---------------------------------------------------------------
+create_role = true
+iam_roles = {
+  example_function_role = {
+    name = "ExampleFunctionRole"
+    assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow"
+    }
+  ]
+}
+EOF
+    additional_policies = [
+      "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    ]
+  }
+}
+
+#---------------------------------------------------------------
+# Lambda Configuration
+#---------------------------------------------------------------
+create_lambda = true
+lambda_functions = {
+  example_function = {
+    name        = "ExampleFunction"
+    runtime     = "nodejs18.x"
+    handler     = "index.handler"
+    timeout     = 30
+    memory_size = "128"
+    s3_bucket   = "lambda-code-bucket"
+    s3_key      = "function.zip"
+    role_key    = "example_function_role"
+    
+    environment_variables = {
+      ENV = "prod"
+    }
+
+    logging_config = {
+      log_format = "JSON"
+      log_group  = "/aws/lambda/ExampleFunction"
+    }
+
+    event_invoke_config = {
+      maximum_event_age_in_seconds = 21600
+      maximum_retry_attempts       = 2
+    }
+  }
+}
+
+#---------------------------------------------------------------
+# Lambda Layer Configuration
+#---------------------------------------------------------------
+create_lambda_layer = true
+lambda_layers = {
+  utils = {
+    name = "UtilsLayer"
+    compatible_runtimes = ["nodejs18.x"]
+    filename = {
+      s3_bucket = "lambda-layers-bucket"
+      s3_key    = "utils-layer.zip"
+    }
+  }
+}
+
+#---------------------------------------------------------------
+# S3 Configuration
+#---------------------------------------------------------------
+create_s3 = true
+s3_buckets = {
+  lambda_code = {
+    name             = "lambda-code-bucket"
+    versioning_enabled = true
+    encryption_enabled = true
+    
+    lifecycle_rules = [
+      {
+        id     = "transition-to-ia"
+        status = "Enabled"
+        filter = {
+          prefix = "archive/"
+        }
+        transitions = [
+          {
+            days          = 90
+            storage_class = "STANDARD_IA"
+          }
+        ]
+        noncurrent_version_transitions = [
+          {
+            days          = 30
+            storage_class = "STANDARD_IA"
+          }
+        ]
+        noncurrent_version_expiration = {
+          days = 90
+        }
+        abort_incomplete_multipart_upload_days = 7
+      }
+    ]
+  }
+}
+
+s3_objects = {
+  lambda_code = {
+    bucket_key = "lambda_code"
+    key        = "function.zip"
+    source     = "path/to/function.zip"
+    storage_class = "STANDARD"
+  }
+}
+
+#---------------------------------------------------------------
+# SNS Configuration
+#---------------------------------------------------------------
+create_sns = true
+sns_topics = {
+  alerts = {
+    name = "QuotaAlerts"
+    subscriptions = {
+      email = {
+        protocol = "email"
+        endpoint = "alerts@example.com"
+      }
+    }
+  }
+}
+
+#---------------------------------------------------------------
+# SQS Configuration
+#---------------------------------------------------------------
+create_sqs = true
+sqs_queue = {
+  dlq = {
+    name                      = "DeadLetterQueue"
+    message_retention_seconds = 1209600
+    receive_wait_time_seconds = 20
+  }
+}
+
+#---------------------------------------------------------------
+# SSM Parameter Configuration
+#---------------------------------------------------------------
+create_ssm_parameter = true
+ssm_parameters = {
+  config = {
+    name        = "/QuotaMonitor/Config"
+    description = "QuotaMonitor Configuration"
+    type        = "String"
+    value       = "default-config"
+    tier        = "Standard"
+  }
+}
+
+#---------------------------------------------------------------
+# Lambda Event Source Mapping Configuration
+#---------------------------------------------------------------
+create_lambda_event_source_mapping = true
+lambda_event_source_mappings = {
+  dynamodb_stream = {
+    function_name     = "example_function"
+    event_source_arn  = "arn:aws:dynamodb:us-east-1:123456789012:table/ServiceTable/stream/timestamp"
+    batch_size        = 1
+    starting_position = "LATEST"
+  }
+}
+
+#---------------------------------------------------------------
+# Lambda Permission Configuration
+#---------------------------------------------------------------
+create_lambda_permission = true
+lambda_permissions = {
+  allow_eventbridge = {
+    statement_id  = "AllowEventBridgeInvoke"
+    action        = "lambda:InvokeFunction"
+    function_name = "example_function"
+    principal     = "events.amazonaws.com"
+    source_arn    = "arn:aws:events:us-east-1:123456789012:rule/example-rule"
+  }
+}

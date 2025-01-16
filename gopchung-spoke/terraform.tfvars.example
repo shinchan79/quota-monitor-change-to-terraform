@@ -1,0 +1,258 @@
+#---------------------------------------------------------------
+# General Configuration
+#---------------------------------------------------------------
+master_prefix = "qm"
+event_bus_arn = "arn:aws:events:us-east-1:123456789012:event-bus/qm-QuotaMonitorBus"
+spoke_sns_region = "us-east-1"
+
+tags = {
+  Environment = "Production"
+  Project     = "QuotaMonitor"
+}
+
+#---------------------------------------------------------------
+# VPC Configuration
+#---------------------------------------------------------------
+vpc_config = {
+  security_group_ids = ["sg-xxxxxxxxxxxxxx"]
+  subnet_ids         = ["subnet-xxxxxxxxxxxxxx", "subnet-yyyyyyyyyyyyyy"]
+}
+
+#---------------------------------------------------------------
+# DynamoDB Configuration
+#---------------------------------------------------------------
+dynamodb_config = {
+  service = {
+    name                            = "ServiceTable"
+    billing_mode                    = "PAY_PER_REQUEST"
+    hash_key                        = "ServiceCode"
+    stream_enabled                  = true
+    stream_view_type               = "NEW_AND_OLD_IMAGES"
+    encryption_enabled             = true
+    point_in_time_recovery_enabled = true
+    deletion_protection_enabled    = false
+  }
+  quota = {
+    name                            = "QuotaTable"
+    billing_mode                    = "PAY_PER_REQUEST"
+    hash_key                        = "ServiceCode"
+    range_key                       = "QuotaCode"
+    encryption_enabled             = true
+    point_in_time_recovery_enabled = true
+    deletion_protection_enabled    = false
+  }
+}
+
+#---------------------------------------------------------------
+# Event Bus Configuration
+#---------------------------------------------------------------
+event_bus_config = {
+  sns_spoke = {
+    bus_name      = "QuotaMonitorSnsSpokeBus"
+    policy_sid    = "allowed_accounts"
+    resource_name = "qm-QuotaMonitorSnsSpokeBus"
+  }
+  quota_monitor_spoke = {
+    bus_name      = "QuotaMonitorSpokeBus"
+    policy_sid    = "AllowPutEvents"
+    resource_name = "qm-QuotaMonitorSpokeBus"
+  }
+}
+
+#---------------------------------------------------------------
+# Lambda Layer Configuration
+#---------------------------------------------------------------
+lambda_layer_config = {
+  utils_sns_spoke = {
+    layer = {
+      name     = "UtilsLayer-SNS-Spoke"
+      runtimes = ["nodejs18.x"]
+    }
+    code = {
+      s3_bucket = "your-lambda-layer-bucket"
+      s3_key    = "utils-sns-spoke-layer.zip"
+    }
+  }
+  utils_sq_spoke = {
+    layer = {
+      name     = "UtilsLayer-SQ-Spoke"
+      runtimes = ["nodejs18.x"]
+    }
+    code = {
+      s3_bucket = "your-lambda-layer-bucket"
+      s3_key    = "utils-sq-spoke-layer.zip"
+    }
+  }
+  utils_ta = {
+    layer = {
+      name     = "UtilsLayer-TA"
+      runtimes = ["nodejs18.x"]
+    }
+    code = {
+      s3_bucket = "your-lambda-layer-bucket"
+      s3_key    = "utils-ta-layer.zip"
+    }
+  }
+}
+
+#---------------------------------------------------------------
+# Lambda Functions Configuration
+#---------------------------------------------------------------
+lambda_functions_config = {
+  sns_publisher = {
+    name                  = "SNSPublisher-Lambda"
+    description           = "SO0005 quota-monitor-for-aws - sq-spoke-SNSPublisherFunction-Lambda"
+    runtime               = "nodejs18.x"
+    handler               = "index.handler"
+    timeout               = 60
+    memory_size           = 128
+    s3_bucket             = "your-lambda-code-bucket"
+    s3_key                = "sns-publisher.zip"
+    log_format            = "JSON"
+    log_group             = "/aws/lambda/SNSPublisher-Lambda"
+    log_level             = "INFO"
+    environment_log_level = "info"
+    sdk_user_agent        = "AwsSolution/SO0005/v6.3.0"
+    app_version           = "v6.3.0"
+    solution_id           = "SO0005"
+    max_event_age         = 14400
+    lambda_qualifier      = "$LATEST"
+  }
+
+  list_manager = {
+    name                  = "ListManager-Function"
+    description           = "SO0005 quota-monitor-for-aws - QM-ListManager-Function"
+    runtime               = "nodejs18.x"
+    handler               = "index.handler"
+    timeout               = 900
+    memory_size           = 256
+    s3_bucket             = "your-lambda-code-bucket"
+    s3_key                = "list-manager.zip"
+    log_format            = "JSON"
+    log_group             = "/aws/lambda/ListManager-Function"
+    log_level             = "INFO"
+    environment_log_level = "info"
+    sdk_user_agent        = "AwsSolution/SO0005/v6.3.0"
+    app_version           = "v6.3.0"
+    solution_id           = "SO0005"
+    max_event_age         = 14400
+    lambda_qualifier      = "$LATEST"
+  }
+
+  list_manager_provider = {
+    name        = "ListManager-Provider-Framework"
+    description = "AWS CDK resource provider framework - onEvent"
+    runtime     = "nodejs18.x"
+    handler     = "framework.onEvent"
+    timeout     = 900
+    memory_size = 128
+    s3_bucket   = "your-lambda-code-bucket"
+    s3_key      = "list-manager-provider.zip"
+    log_format  = "JSON"
+    log_group   = "/aws/lambda/ListManager-Provider-Framework"
+    log_level   = "INFO"
+  }
+
+  qmcw_poller = {
+    name                  = "CWPoller-Lambda"
+    description           = "SO0005 quota-monitor-for-aws - QM-CWPoller-Lambda"
+    runtime               = "nodejs18.x"
+    handler               = "index.handler"
+    timeout               = 900
+    memory_size           = 512
+    s3_bucket             = "your-lambda-code-bucket"
+    s3_key                = "cw-poller.zip"
+    log_format            = "JSON"
+    log_group             = "/aws/lambda/CWPoller-Lambda"
+    log_level             = "INFO"
+    environment_log_level = "info"
+    sdk_user_agent        = "AwsSolution/SO0005/v6.3.0"
+    app_version           = "v6.3.0"
+    solution_id           = "SO0005"
+    max_event_age         = 14400
+    lambda_qualifier      = "$LATEST"
+  }
+
+  ta_refresher = {
+    name                  = "TA-Refresher-Lambda"
+    description           = "SO0005 quota-monitor-for-aws - QM-TA-Refresher-Lambda"
+    runtime               = "nodejs18.x"
+    handler               = "index.handler"
+    timeout               = 60
+    memory_size           = 128
+    s3_bucket             = "your-lambda-code-bucket"
+    s3_key                = "ta-refresher.zip"
+    log_format            = "JSON"
+    log_group             = "/aws/lambda/TA-Refresher-Lambda"
+    log_level             = "INFO"
+    environment_log_level = "info"
+    sdk_user_agent        = "AwsSolution/SO0005/v6.3.0"
+    app_version           = "v6.3.0"
+    solution_id           = "SO0005"
+    max_event_age         = 14400
+    lambda_qualifier      = "$LATEST"
+  }
+}
+
+#---------------------------------------------------------------
+# SNS Configuration
+#---------------------------------------------------------------
+create_sns = true
+existing_sns_topic_arn = null
+kms_key_arn = null
+
+sns_topics_config = {
+  sns_publisher = {
+    name = "SNSPublisher-SNSTopic"
+  }
+}
+
+#---------------------------------------------------------------
+# SQS Configuration
+#---------------------------------------------------------------
+sqs_queues_config = {
+  sns_publisher_dlq = {
+    name    = "SNSPublisher-Lambda-DLQ"
+    actions = "sqs:*"
+  }
+  qmcw_poller_dlq = {
+    name    = "CWPoller-Lambda-DLQ"
+    actions = "sqs:*"
+  }
+  qmta_refresher_dlq = {
+    name    = "TARefresher-Lambda-DLQ"
+    actions = "sqs:*"
+  }
+}
+
+#---------------------------------------------------------------
+# SSM Parameters Configuration
+#---------------------------------------------------------------
+ssm_parameters_config = {
+  notification_muting = {
+    name        = "/QuotaMonitor/spoke/NotificationConfiguration"
+    description = "Muting configuration for services and limits"
+    type        = "StringList"
+    value       = "ec2:L-1216C47A,ec2:Running On-Demand Standard instances,dynamodb,logs:*,geo:L-05EFD12D"
+    tier        = "Standard"
+    tags        = {
+      Service = "Notifications"
+    }
+  }
+}
+
+#---------------------------------------------------------------
+# Monitoring Configuration
+#---------------------------------------------------------------
+send_metric = "No"
+monitoring_frequency = "rate(5 minutes)"
+notification_threshold = 80
+report_ok_notifications = false
+aws_services = "AutoScaling,CloudFormation,DynamoDB,EBS,EC2,ELB,IAM,Kinesis,RDS,Route53,SES,VPC"
+sagemaker_monitoring = "No"  # "Yes" or "No"
+connect_monitoring   = "No"  # "Yes" or "No"
+#---------------------------------------------------------------
+# DynamoDB Keys Configuration
+#---------------------------------------------------------------
+partition_key = "ServiceCode"
+sort_key = "QuotaCode"

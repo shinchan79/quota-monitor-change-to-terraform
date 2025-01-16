@@ -1,0 +1,1 @@
+Deploy: us-east-1, Trusted Advisor chỉ được us-east-1 thôi

@@ -1,0 +1,108 @@
+# Lambda function configurations
+variable "lambda_functions_config" {
+  description = "Configuration for Lambda functions"
+  type = map(object({
+    name                  = string
+    description           = string
+    runtime               = string
+    handler               = string
+    timeout               = number
+    memory_size           = number
+    s3_bucket             = string
+    s3_key                = string
+    log_format            = string
+    log_group             = string
+    log_level             = string
+    environment_log_level = optional(string)
+    sdk_user_agent        = optional(string)
+    app_version           = optional(string)
+    solution_id           = optional(string)
+    max_event_age         = optional(number)
+    lambda_qualifier      = optional(string)
+    tags                  = optional(map(string), {})
+  }))
+
+  default = {
+    ta_refresher = {
+      name                  = "TA-Refresher-Lambda"
+      description           = "SO0005 quota-monitor-for-aws - QM-TA-Refresher-Lambda"
+      runtime               = "nodejs18.x"
+      handler               = "index.handler"
+      timeout               = 60
+      memory_size           = 128
+      s3_bucket             = "solutions-us-east-1"
+      s3_key                = "quota-monitor-for-aws/v6.3.0/assete062344a6a45f8d5d2900b99e0126935391d50d4577da563c08475673a012f4c.zip"
+      log_format            = "JSON"
+      log_group             = "/aws/lambda/TA-Refresher-Lambda"
+      log_level             = "INFO"
+      environment_log_level = "info"
+      sdk_user_agent        = "AwsSolution/SO0005/v6.3.0"
+      app_version           = "v6.3.0"
+      solution_id           = "SO0005"
+      max_event_age         = 14400
+      lambda_qualifier      = "$LATEST"
+      tags                  = {}
+    }
+  }
+}
+
+module "lambda" {
+  source = "../../modules"
+
+  create        = true
+  master_prefix = var.master_prefix
+
+  lambda_functions = {
+    ta_refresher = {
+      name        = format("%s-%s", var.master_prefix, var.lambda_functions_config["ta_refresher"].name)
+      description = var.lambda_functions_config["ta_refresher"].description
+      runtime     = var.lambda_functions_config["ta_refresher"].runtime
+      handler     = var.lambda_functions_config["ta_refresher"].handler
+      timeout     = var.lambda_functions_config["ta_refresher"].timeout
+      memory_size = var.lambda_functions_config["ta_refresher"].memory_size
+      role_arn    = module.iam.iam_role_arns["qm_ta_refresher_lambda_role"]
+
+      s3_bucket = var.lambda_functions_config["ta_refresher"].s3_bucket
+      s3_key    = var.lambda_functions_config["ta_refresher"].s3_key
+
+      dead_letter_config = {
+        target_arn = module.sqs.sqs_queue_arns["qmta_refresher_dlq"]
+      }
+
+      layers = [module.lambda_layer.lambda_layer_arns["utils_ta"]]
+
+      environment_variables = {
+        AWS_SERVICES          = var.aws_services
+        LOG_LEVEL            = var.lambda_functions_config["ta_refresher"].environment_log_level
+        CUSTOM_SDK_USER_AGENT = var.lambda_functions_config["ta_refresher"].sdk_user_agent
+        VERSION              = var.lambda_functions_config["ta_refresher"].app_version
+        SOLUTION_ID          = var.lambda_functions_config["ta_refresher"].solution_id
+      }
+
+      event_invoke_config = {
+        maximum_event_age_in_seconds = var.lambda_functions_config["ta_refresher"].max_event_age
+        qualifier                    = var.lambda_functions_config["ta_refresher"].lambda_qualifier
+      }
+
+      logging_config = {
+        log_format = var.lambda_functions_config["ta_refresher"].log_format
+        log_group  = var.lambda_functions_config["ta_refresher"].log_group
+        log_level  = var.lambda_functions_config["ta_refresher"].log_level
+      }
+
+      tags = merge(
+        {
+          Name = format("%s-%s", var.master_prefix, var.lambda_functions_config["ta_refresher"].name)
+        },
+        var.lambda_functions_config["ta_refresher"].tags,
+        local.merged_tags
+      )
+    }
+  }
+
+  depends_on = [
+    module.iam,
+    module.lambda_layer,
+    module.sqs
+  ]
+}
