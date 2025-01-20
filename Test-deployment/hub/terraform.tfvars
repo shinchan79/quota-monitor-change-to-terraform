@@ -98,7 +98,7 @@ dynamodb_config = {
 event_bus_config = {
   quota_monitor = {
     bus_name      = "QuotaMonitorBus"
-    policy_sid    = "AllowPutEvents"
+    policy_sid    = "AllowPutEvents"  # Giữ lại policy_sid
     resource_name = "qm-QuotaMonitorBus"
   }
 }
@@ -108,23 +108,29 @@ event_bus_config = {
 #---------------------------------------------------------------
 event_rules_config = {
   sns_publisher = {
-    name                      = "SNSPublisher-EventsRule"
-    description               = "SO0005 quota-monitor-for-aws - QM-SNSPublisherFunction-EventsRule"
-    target_id                 = "Target0"
-    status                    = ["WARN", "ERROR"]
-    detail_type_notifications = ["Trusted Advisor Check Item Refresh Notification", "Service Quotas Utilization Notification"]
-    event_sources             = ["aws.trustedadvisor", "aws-solutions.quota-monitor"]
+    name        = "SNSPublisher-EventsRule"
+    description = "SO0005 quota-monitor-for-aws - QM-SNSPublisherFunction-EventsRule"
+    target_id   = "Target0"
+    status      = ["WARN", "ERROR"]  # Giữ lại status
+    detail_type_notifications = [
+      "Trusted Advisor Check Item Refresh Status",
+      "Service Quotas Quota Value Change"
+    ]
+    event_sources = ["aws.trustedadvisor", "aws.servicequotas"]
     tags = {
       Rule = "SNSPublisher"
     }
   }
   summarizer = {
-    name                      = "Summarizer-EventQueue-Rule"
-    description               = "SO0005 quota-monitor-for-aws - QM-Summarizer-EventQueue-EventsRule"
-    target_id                 = "Target0"
-    status                    = ["OK", "WARN", "ERROR"]
-    detail_type_notifications = ["Trusted Advisor Check Item Refresh Notification", "Service Quotas Utilization Notification"]
-    event_sources             = ["aws.trustedadvisor", "aws-solutions.quota-monitor"]
+    name        = "Summarizer-EventQueue-Rule"
+    description = "SO0005 quota-monitor-for-aws - QM-Summarizer-EventQueue-EventsRule"
+    target_id   = "Target0"
+    status      = ["OK", "WARN", "ERROR"]  # Giữ lại status
+    detail_type_notifications = [
+      "Trusted Advisor Check Item Refresh Status",
+      "Service Quotas Quota Value Change"
+    ]
+    event_sources = ["aws.trustedadvisor", "aws.servicequotas"]
     tags = {
       Rule = "Summarizer"
     }
@@ -149,7 +155,6 @@ lambda_layer_config = {
       name     = "QM-UtilsLayer"
       runtimes = ["nodejs18.x"]
     }
-
   }
 }
 
@@ -301,16 +306,24 @@ ssm_parameters_config = {
       Service = "Notifications"
     }
   }
+  target_accounts = {
+    name        = "/QuotaMonitor/Accounts"
+    description = "List of accounts to monitor"
+    type        = "StringList"
+    value       = "405142580014,830427153490"
+    tier        = "Standard"
+    tags = {
+      Service = "AccountManagement"
+    }
+  }
 }
 
 #---------------------------------------------------------------
 # S3 Configuration
 #---------------------------------------------------------------
-# S3 Configuration
 create_s3 = true
-# S3 Configuration
 s3_config = {
-  bucket_name = "quota-monitor-source-code" # Không cần khai báo full name ở đây nữa
+  bucket_name = "quota-monitor-source-code"
   versioning  = true
   lifecycle_rules = [{
     id      = "cleanup"
@@ -334,7 +347,7 @@ source_code_objects = {
     source_path = "source_codes/sns-publisher.zip"
     s3_key      = "lambda/sns_publisher.zip"
   }
-  reporter = { # Thêm reporter
+  reporter = {
     source_path = "source_codes/reporter.zip"
     s3_key      = "lambda/reporter.zip"
   }
