@@ -26,6 +26,10 @@ module "helper_lambda" {
         timeout     = var.helper_config.lambda_function.timeout
         memory_size = var.helper_config.lambda_function.memory_size
         role_arn    = module.iam.iam_role_arns["lambda_helper"]
+
+        layers = [
+          module.lambda_layer.lambda_layer_arns["utils"]
+        ]
       },
       # Sử dụng logic source code giống như các lambda functions khác
       {
@@ -45,6 +49,10 @@ module "helper_lambda" {
           CUSTOM_SDK_USER_AGENT = var.helper_config.lambda_environment.sdk_user_agent
           VERSION               = var.helper_config.lambda_environment.version
           SOLUTION_ID           = var.helper_config.lambda_environment.solution_id
+          LOG_LEVEL            = var.helper_config.lambda_environment.log_level
+          METRICS_ENDPOINT     = local.quota_monitor_map.Metrics.MetricsEndpoint
+          QM_STACK_ID          = var.helper_config.lambda_environment.qm_stack_id
+          SEND_METRIC         = var.helper_config.lambda_environment.send_metric
         }
 
         event_invoke_config = {

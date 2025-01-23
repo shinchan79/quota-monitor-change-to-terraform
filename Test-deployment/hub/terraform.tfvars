@@ -28,7 +28,7 @@ vpc_config = {
 # Notifications Configuration
 #---------------------------------------------------------------
 enable_email = true
-sns_emails   = ["user1@example.com", "user2@example.com"]
+sns_emails   = ["trinhhaiyen79@gmail.com"]
 
 #---------------------------------------------------------------
 # Monitoring Configuration
@@ -47,7 +47,7 @@ kms_config = {
     description     = "CMK for AWS resources provisioned by Quota Monitor in this account"
     deletion_window = 7
     enable_rotation = true
-    alias           = "alias/CMK-KMS-Hub"
+    alias           = "alias/CMK-KMS-Hub2"
   }
   policy = {
     version               = "2012-10-17"
@@ -84,7 +84,7 @@ sns_config = {
 #---------------------------------------------------------------
 dynamodb_config = {
   quota_monitor = {
-    table_name    = "QuotaMonitor-Table"
+    table_name    = "QMTable"
     billing_mode  = "PAY_PER_REQUEST"
     hash_key      = "MessageId"
     range_key     = "TimeStamp"
@@ -98,7 +98,7 @@ dynamodb_config = {
 event_bus_config = {
   quota_monitor = {
     bus_name      = "QuotaMonitorBus"
-    policy_sid    = "AllowPutEvents"  # Giữ lại policy_sid
+    policy_sid    = "AllowPutEvents"
     resource_name = "qm-QuotaMonitorBus"
   }
 }
@@ -108,40 +108,53 @@ event_bus_config = {
 #---------------------------------------------------------------
 event_rules_config = {
   sns_publisher = {
-    name        = "SNSPublisher-EventsRule"
+    name        = "QM-SNSPublisherFunction-EventsRule" 
     description = "SO0005 quota-monitor-for-aws - QM-SNSPublisherFunction-EventsRule"
     target_id   = "Target0"
-    status      = ["WARN", "ERROR"]  # Giữ lại status
+    status      = ["WARN", "ERROR"]
     detail_type_notifications = [
-      "Trusted Advisor Check Item Refresh Status",
-      "Service Quotas Quota Value Change"
+      "Trusted Advisor Check Item Refresh Notification",
+      "Service Quotas Utilization Notification"
     ]
-    event_sources = ["aws.trustedadvisor", "aws.servicequotas"]
+    event_sources = ["aws.trustedadvisor", "aws-solutions.quota-monitor"]
     tags = {
       Rule = "SNSPublisher"
     }
   }
+
   summarizer = {
-    name        = "Summarizer-EventQueue-Rule"
+    name        = "QM-Summarizer-EventQueue-EventsRule"
     description = "SO0005 quota-monitor-for-aws - QM-Summarizer-EventQueue-EventsRule"
     target_id   = "Target0"
-    status      = ["OK", "WARN", "ERROR"]  # Giữ lại status
+    status      = ["OK", "WARN", "ERROR"]
     detail_type_notifications = [
-      "Trusted Advisor Check Item Refresh Status",
-      "Service Quotas Quota Value Change"
+      "Trusted Advisor Check Item Refresh Notification",
+      "Service Quotas Utilization Notification" 
     ]
-    event_sources = ["aws.trustedadvisor", "aws.servicequotas"]
+    event_sources = ["aws.trustedadvisor", "aws-solutions.quota-monitor"]
     tags = {
       Rule = "Summarizer"
     }
   }
+
   reporter = {
-    name        = "Reporter-EventsRule"
+    name        = "QM-Reporter-EventsRule"
     description = "SO0005 quota-monitor-for-aws - QM-Reporter-EventsRule"
-    schedule    = "rate(5 minutes)"
+    schedule    = "rate(3 hours)"
     target_id   = "Target0"
     tags = {
       Rule = "Reporter"
+    }
+  }
+
+  deployment_manager = {
+    name        = "QM-Deployment-Manager-EventsRule"
+    description = "SO0005 quota-monitor-for-aws - QM-Deployment-Manager-EventsRule"
+    target_id   = "Target0"
+    detail_type = ["Parameter Store Change"]
+    source      = ["aws.ssm"]
+    tags = {
+      Rule = "DeploymentManager"
     }
   }
 }
@@ -163,8 +176,8 @@ lambda_layer_config = {
 #---------------------------------------------------------------
 lambda_functions_config = {
   provider_framework = {
-    name        = "Helper-Provider-Framework"
-    description = "AWS CDK resource provider framework"
+    name        = "QM-Helper-Provider-framework-onEvent"
+    description = "AWS CDK resource provider framework - onEvent (quota-monitor-hub-no-ou/QM-Helper/QM-Helper-Provider)"
     runtime     = "nodejs18.x"
     handler     = "framework.onEvent"
     timeout     = 900
@@ -172,7 +185,7 @@ lambda_functions_config = {
     s3_bucket   = "your-lambda-code-bucket"
     s3_key      = "provider-framework.zip"
     log_format  = "JSON"
-    log_group   = "/aws/lambda/Helper-Provider-Framework"
+    log_group   = "/aws/lambda/QM-Helper-Provider-framework-onEvent"
     log_level   = "INFO"
   }
 
@@ -187,8 +200,8 @@ lambda_functions_config = {
     s3_key                = "sns-publisher.zip"
     log_format            = "JSON"
     log_group             = "/aws/lambda/SNSPublisher-Lambda"
-    log_level             = "INFO"
-    environment_log_level = "info"
+    log_level             = "DEBUG"
+    environment_log_level = "debug"
     sdk_user_agent        = "AwsSolution/SO0005/v6.3.0"
     app_version           = "v6.3.0"
     solution_id           = "SO0005"
@@ -201,12 +214,12 @@ lambda_functions_config = {
     description           = "SO0005 quota-monitor-for-aws - QM-Reporter-Lambda"
     runtime               = "nodejs18.x"
     handler               = "index.handler"
-    timeout               = 10
+    timeout               = 60
     memory_size           = 512
     s3_bucket             = "your-lambda-code-bucket"
     s3_key                = "reporter.zip"
-    log_format            = "JSON"
-    log_group             = "/aws/lambda/Reporter-Lambda"
+    log_format            = "Text"
+    log_group             = "/aws/lambda/qm-Reporter-Lambda"
     log_level             = "INFO"
     max_messages          = "10"
     max_loops             = "10"
@@ -214,6 +227,20 @@ lambda_functions_config = {
     sdk_user_agent        = "AwsSolution/SO0005/v6.3.0"
     app_version           = "v6.3.0"
     solution_id           = "SO0005"
+    max_event_age         = 14400
+    lambda_qualifier      = "$LATEST"
+  }
+
+  deployment_manager = {
+    name                  = "QM-Deployment-Manager-Lambda"
+    description           = "SO0005 quota-monitor-for-aws - QM-Deployment-Manager-Lambda"
+    runtime               = "nodejs18.x"
+    handler               = "index.handler"
+    timeout               = 60
+    memory_size           = 512
+    log_format            = "JSON"
+    log_group             = "/aws/lambda/QM-Deployment-Manager-Lambda"
+    log_level             = "INFO"
     max_event_age         = 14400
     lambda_qualifier      = "$LATEST"
   }
@@ -233,6 +260,11 @@ lambda_permissions_config = {
     action       = "lambda:InvokeFunction"
     principal    = "events.amazonaws.com"
   }
+  deployment_manager = {
+    statement_id = "AllowEventBridgeInvoke"
+    action       = "lambda:InvokeFunction"
+    principal    = "events.amazonaws.com"
+  }
 }
 
 #---------------------------------------------------------------
@@ -244,7 +276,7 @@ helper_config = {
     description = "SO0005 quota-monitor-for-aws - QM-Helper-Function"
     runtime     = "nodejs18.x"
     handler     = "index.handler"
-    timeout     = 5
+    timeout     = 60
     memory_size = 128
     tags = {
       Function = "Helper"
@@ -259,6 +291,9 @@ helper_config = {
     sdk_user_agent = "AwsSolution/SO0005/v6.3.0"
     version        = "v6.3.0"
     solution_id    = "SO0005"
+    log_level      = "info"
+    qm_stack_id    = "quota-monitor-hub-no-ou"
+    send_metric    = "No"
   }
   lambda_event = {
     max_event_age = 14400
@@ -288,6 +323,10 @@ sqs_queues_config = {
   }
   reporter_dlq = {
     name    = "Reporter-Lambda-DLQ"
+    actions = "sqs:*"
+  }
+  deployment_manager_dlq = {
+    name    = "DeploymentManager-Lambda-DLQ"
     actions = "sqs:*"
   }
 }
@@ -351,8 +390,22 @@ source_code_objects = {
     source_path = "source_codes/reporter.zip"
     s3_key      = "lambda/reporter.zip"
   }
+  deployment_manager = {
+    source_path = "source_codes/deployment-manager.zip"
+    s3_key      = "lambda/deployment_manager.zip"
+  }
   utils_layer = {
     source_path = "source_codes/utils-layer.zip"
     s3_key      = "layers/utils_layer.zip"
   }
+}
+
+
+# IAM 
+iam_role_names = {
+  lambda_helper      = "HelperFunctionRole"
+  deployment_manager = "DeploymentManager-Lambda-Role"
+  provider_framework = "HelperProviderFrameworkOnEventRole"
+  sns_publisher      = "SNSPublisher-Lambda-Role"
+  reporter           = "Reporter-Lambda-Role"
 }

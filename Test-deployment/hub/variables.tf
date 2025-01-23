@@ -6,17 +6,17 @@ variable "dynamodb_config" {
     billing_mode  = string
     hash_key      = string
     range_key     = string
-    ttl_attribute = string
+    ttl_attribute = optional(string)
   }))
-  default = {
-    quota_monitor = {
-      table_name    = "QuotaMonitor-Table"
-      billing_mode  = "PAY_PER_REQUEST"
-      hash_key      = "MessageId"
-      range_key     = "TimeStamp"
-      ttl_attribute = "ExpiryTime"
-    }
-  }
+  # default = {
+  #   quota_monitor = {
+  #     table_name    = "QuotaMonitor-Table"
+  #     billing_mode  = "PAY_PER_REQUEST"
+  #     hash_key      = "MessageId"
+  #     range_key     = "TimeStamp"
+  #     ttl_attribute = "ExpiryTime"
+  #   }
+  # }
 }
 
 # Event bus
@@ -28,17 +28,15 @@ variable "event_bus_config" {
     policy_sid    = string
     resource_name = string
   }))
-  default = {
-    quota_monitor = {
-      bus_name      = "QuotaMonitorBus"
-      policy_sid    = "AllowPutEvents"
-      resource_name = "qm-QuotaMonitorBus"
-    }
-  }
+  # default = {
+  #   quota_monitor = {
+  #     bus_name      = "QuotaMonitorBus"
+  #     policy_sid    = "AllowPutEvents"
+  #     resource_name = "qm-QuotaMonitorBus"
+  #   }
+  # }
 }
 
-
-#....
 variable "vpc_config" {
   description = "VPC configuration for Lambda function"
   type = object({
@@ -156,39 +154,39 @@ variable "event_rules_config" {
     tags                      = optional(map(string), {})
   }))
 
-  default = {
-    sns_publisher = {
-      name                      = "SNSPublisher-EventsRule"
-      description               = "SO0005 quota-monitor-for-aws - QM-SNSPublisherFunction-EventsRule"
-      target_id                 = "Target0"
-      status                    = ["WARN", "ERROR"]
-      detail_type_notifications = ["Trusted Advisor Check Item Refresh Notification", "Service Quotas Utilization Notification"]
-      event_sources             = ["aws.trustedadvisor", "aws-solutions.quota-monitor"]
-      tags                      = {}
-    }
-    summarizer = {
-      name                      = "Summarizer-EventQueue-Rule"
-      description               = "SO0005 quota-monitor-for-aws - QM-Summarizer-EventQueue-EventsRule"
-      target_id                 = "Target0"
-      status                    = ["OK", "WARN", "ERROR"]
-      detail_type_notifications = ["Trusted Advisor Check Item Refresh Notification", "Service Quotas Utilization Notification"]
-      event_sources             = ["aws.trustedadvisor", "aws-solutions.quota-monitor"]
-      tags                      = {}
-    }
-    reporter = {
-      name        = "Reporter-EventsRule"
-      description = "SO0005 quota-monitor-for-aws - QM-Reporter-EventsRule"
-      schedule    = "rate(5 minutes)"
-      target_id   = "Target0"
-      tags        = {}
-    }
-    deployment_manager = {
-      name        = "Deployment-Manager-EventsRule"
-      description = "SO0005 quota-monitor-for-aws - QM-Deployment-Manager-EventsRule"
-      target_id   = "Target0"
-      tags        = {}
-    }
-  }
+  # default = {
+  #   sns_publisher = {
+  #     name                      = "SNSPublisher-EventsRule"
+  #     description               = "SO0005 quota-monitor-for-aws - QM-SNSPublisherFunction-EventsRule"
+  #     target_id                 = "Target0"
+  #     status                    = ["WARN", "ERROR"]
+  #     detail_type_notifications = ["Trusted Advisor Check Item Refresh Notification", "Service Quotas Utilization Notification"]
+  #     event_sources             = ["aws.trustedadvisor", "aws-solutions.quota-monitor"]
+  #     tags                      = {}
+  #   }
+  #   summarizer = {
+  #     name                      = "Summarizer-EventQueue-Rule"
+  #     description               = "SO0005 quota-monitor-for-aws - QM-Summarizer-EventQueue-EventsRule"
+  #     target_id                 = "Target0"
+  #     status                    = ["OK", "WARN", "ERROR"]
+  #     detail_type_notifications = ["Trusted Advisor Check Item Refresh Notification", "Service Quotas Utilization Notification"]
+  #     event_sources             = ["aws.trustedadvisor", "aws-solutions.quota-monitor"]
+  #     tags                      = {}
+  #   }
+  #   reporter = {
+  #     name        = "Reporter-EventsRule"
+  #     description = "SO0005 quota-monitor-for-aws - QM-Reporter-EventsRule"
+  #     schedule    = "rate(5 minutes)"
+  #     target_id   = "Target0"
+  #     tags        = {}
+  #   }
+  #   deployment_manager = {
+  #     name        = "Deployment-Manager-EventsRule"
+  #     description = "SO0005 quota-monitor-for-aws - QM-Deployment-Manager-EventsRule"
+  #     target_id   = "Target0"
+  #     tags        = {}
+  #   }
+  # }
 }
 
 # Helper lambda config
@@ -214,6 +212,9 @@ variable "helper_config" {
       sdk_user_agent = string
       version        = string
       solution_id    = string
+      log_level      = string           # Thêm trường này
+      qm_stack_id    = string           # Thêm trường này  
+      send_metric    = string           # Thêm trường này
     })
     lambda_event = object({
       max_event_age = number
@@ -226,37 +227,40 @@ variable "helper_config" {
       logging_level = string
     })
   })
-  default = {
-    lambda_function = {
-      name        = "Helper-Function"
-      description = "SO0005 quota-monitor-for-aws - QM-Helper-Function"
-      runtime     = "nodejs18.x"
-      handler     = "index.handler"
-      timeout     = 5
-      memory_size = 128
-      tags        = {}
-    }
-    lambda_code = {
-      s3_bucket = "immersionday-aaaa-jjjj"
-      s3_key    = "test-aws-myApplication.zip"
-    }
-    lambda_environment = {
-      stack_id       = "quota-monitor-hub"
-      sdk_user_agent = "AwsSolution/SO0005/v6.3.0"
-      version        = "v6.3.0"
-      solution_id    = "SO0005"
-    }
-    lambda_event = {
-      max_event_age = 14400
-      qualifier     = "$LATEST"
-    }
-    lambda_logging = {
-      log_level     = "info"
-      log_format    = "JSON"
-      log_group     = "/aws/lambda/QuotaMonitor-Helper"
-      logging_level = "INFO"
-    }
-  }
+  # default = {
+  #   lambda_function = {
+  #     name        = "Helper-Function"
+  #     description = "SO0005 quota-monitor-for-aws - QM-Helper-Function"
+  #     runtime     = "nodejs18.x"
+  #     handler     = "index.handler"
+  #     timeout     = 5
+  #     memory_size = 128
+  #     tags        = {}
+  #   }
+  #   lambda_code = {
+  #     s3_bucket = "immersionday-aaaa-jjjj"
+  #     s3_key    = "test-aws-myApplication.zip"
+  #   }
+  #   lambda_environment = {
+  #     stack_id       = "quota-monitor-hub"
+  #     sdk_user_agent = "AwsSolution/SO0005/v6.3.0"
+  #     version        = "v6.3.0"
+  #     solution_id    = "SO0005"
+  #     log_level      = "info"           # Thêm giá trị default
+  #     qm_stack_id    = "quota-monitor-hub-no-ou"  # Thêm giá trị default
+  #     send_metric    = "Yes"            # Thêm giá trị default
+  #   }
+  #   lambda_event = {
+  #     max_event_age = 14400
+  #     qualifier     = "$LATEST"
+  #   }
+  #   lambda_logging = {
+  #     log_level     = "info"
+  #     log_format    = "JSON"
+  #     log_group     = "/aws/lambda/QuotaMonitor-Helper"
+  #     logging_level = "INFO"
+  #   }
+  # }
 }
 
 # IAM 
@@ -269,12 +273,13 @@ variable "helper_config" {
 variable "iam_role_names" {
   description = "Names for IAM roles"
   type        = map(string)
-  default = {
-    lambda_helper      = "HelperFunctionRole"
-    provider_framework = "HelperProviderFrameworkOnEventRole"
-    sns_publisher      = "SNSPublisher-Lambda-Role"
-    reporter           = "Reporter-Lambda-Role"
-  }
+  # default = {
+  #   lambda_helper      = "HelperFunctionRole"
+  #   deployment_manager = "DeploymentManager-Lambda-Role"
+  #   provider_framework = "HelperProviderFrameworkOnEventRole"
+  #   sns_publisher      = "SNSPublisher-Lambda-Role"
+  #   reporter           = "Reporter-Lambda-Role"
+  # }
 }
 
 variable "master_prefix" {
@@ -322,29 +327,29 @@ variable "kms_config" {
       eventbridge_actions   = list(string)
     })
   })
-  default = {
-    key = {
-      description     = "CMK for AWS resources provisioned by Quota Monitor in this account"
-      deletion_window = 7
-      enable_rotation = true
-      alias           = "alias/CMK-KMS-Hub"
-    }
-    policy = {
-      version               = "2012-10-17"
-      effect_allow          = "Allow"
-      all_resources         = "*"
-      iam_sid               = "Enable IAM User Permissions"
-      eventbridge_sid       = "Allow EventBridge Service"
-      eventbridge_principal = "events.amazonaws.com"
-      admin_actions         = "kms:*"
-      eventbridge_actions = [
-        "kms:Decrypt",
-        "kms:Encrypt",
-        "kms:ReEncrypt*",
-        "kms:GenerateDataKey*"
-      ]
-    }
-  }
+  # default = {
+  #   key = {
+  #     description     = "CMK for AWS resources provisioned by Quota Monitor in this account"
+  #     deletion_window = 7
+  #     enable_rotation = true
+  #     alias           = "alias/CMK-KMS-Hub2"
+  #   }
+  #   policy = {
+  #     version               = "2012-10-17"
+  #     effect_allow          = "Allow"
+  #     all_resources         = "*"
+  #     iam_sid               = "Enable IAM User Permissions"
+  #     eventbridge_sid       = "Allow EventBridge Service"
+  #     eventbridge_principal = "events.amazonaws.com"
+  #     admin_actions         = "kms:*"
+  #     eventbridge_actions = [
+  #       "kms:Decrypt",
+  #       "kms:Encrypt",
+  #       "kms:ReEncrypt*",
+  #       "kms:GenerateDataKey*"
+  #     ]
+  #   }
+  # }
 }
 
 # Lambda layer
@@ -363,14 +368,14 @@ variable "lambda_layer_config" {
       key    = string
     }))
   }))
-  default = {
-    utils = {
-      layer = {
-        name     = "QM-UtilsLayer"
-        runtimes = ["nodejs18.x"]
-      }
-    }
-  }
+  # default = {
+  #   utils = {
+  #     layer = {
+  #       name     = "QM-UtilsLayer"
+  #       runtimes = ["nodejs18.x"]
+  #     }
+  #   }
+  # }
 }
 
 # Lambda permission
@@ -381,23 +386,23 @@ variable "lambda_permissions_config" {
     action       = string
     principal    = string
   }))
-  default = {
-    sns_publisher = {
-      statement_id = "AllowEventBridgeInvoke"
-      action       = "lambda:InvokeFunction"
-      principal    = "events.amazonaws.com"
-    }
-    reporter = {
-      statement_id = "AllowEventBridgeInvoke"
-      action       = "lambda:InvokeFunction"
-      principal    = "events.amazonaws.com"
-    }
-    deployment_manager = {
-      statement_id = "AllowEventBridgeInvoke"
-      action       = "lambda:InvokeFunction"
-      principal    = "events.amazonaws.com"
-    }
-  }
+  # default = {
+  #   sns_publisher = {
+  #     statement_id = "AllowEventBridgeInvoke"
+  #     action       = "lambda:InvokeFunction"
+  #     principal    = "events.amazonaws.com"
+  #   }
+  #   reporter = {
+  #     statement_id = "AllowEventBridgeInvoke"
+  #     action       = "lambda:InvokeFunction"
+  #     principal    = "events.amazonaws.com"
+  #   }
+  #   deployment_manager = {
+  #     statement_id = "AllowEventBridgeInvoke"
+  #     action       = "lambda:InvokeFunction"
+  #     principal    = "events.amazonaws.com"
+  #   }
+  # }
 }
 
 # Lambda 
@@ -430,94 +435,161 @@ variable "lambda_functions_config" {
     max_loops             = optional(string)
     tags                  = optional(map(string), {})
   }))
-  default = {
-    provider_framework = {
-      name                  = "Provider-Framework"
-      description           = "AWS CDK resource provider framework"
-      runtime               = "nodejs18.x"
-      handler               = "framework.onEvent"
-      timeout               = 900
-      memory_size           = 128
-      log_format            = "JSON"
-      log_group             = "/aws/lambda/Provider-Framework"
-      log_level             = "INFO"
-      environment_log_level = "info"
-      sdk_user_agent        = "AwsSolution/SO0005/v6.3.0"
-      app_version           = "v6.3.0"
-      solution_id           = "SO0005"
-      max_event_age         = 14400
-      lambda_qualifier      = "$LATEST"
-      s3_source = {
-        bucket = "solutions-us-east-1"
-        key    = "quota-monitor-for-aws/v6.3.0/framework-onEvent.zip"
-      }
-    }
-    helper = {
-      name                  = "Helper-Function"
-      description           = "Helper function for the solution"
-      runtime               = "nodejs18.x"
-      handler               = "index.handler"
-      timeout               = 900
-      memory_size           = 128
-      log_format            = "JSON"
-      log_group             = "/aws/lambda/Helper-Function"
-      log_level             = "INFO"
-      environment_log_level = "info"
-      sdk_user_agent        = "AwsSolution/SO0005/v6.3.0"
-      app_version           = "v6.3.0"
-      solution_id           = "SO0005"
-      max_event_age         = 14400
-      lambda_qualifier      = "$LATEST"
-      s3_source = {
-        bucket = "solutions-us-east-1"
-        key    = "quota-monitor-for-aws/v6.3.0/helper-function.zip"
-      }
-    }
-    reporter = {
-      name                  = "Reporter"
-      description           = "Reporter function"
-      runtime               = "nodejs18.x"
-      handler               = "index.handler"
-      timeout               = 900
-      memory_size           = 128
-      log_format            = "JSON"
-      log_group             = "/aws/lambda/Reporter"
-      log_level             = "INFO"
-      environment_log_level = "info"
-      sdk_user_agent        = "AwsSolution/SO0005/v6.3.0"
-      app_version           = "v6.3.0"
-      solution_id           = "SO0005"
-      max_event_age         = 14400
-      lambda_qualifier      = "$LATEST"
-      max_messages          = 10
-      max_loops             = 10
-      s3_source = {
-        bucket = "solutions-us-east-1"
-        key    = "quota-monitor-for-aws/v6.3.0/reporter.zip"
-      }
-    }
-    sns_publisher = {
-      name                  = "SNS-Publisher"
-      description           = "SNS publisher function"
-      runtime               = "nodejs18.x"
-      handler               = "index.handler"
-      timeout               = 900
-      memory_size           = 128
-      log_format            = "JSON"
-      log_group             = "/aws/lambda/SNS-Publisher"
-      log_level             = "INFO"
-      environment_log_level = "info"
-      sdk_user_agent        = "AwsSolution/SO0005/v6.3.0"
-      app_version           = "v6.3.0"
-      solution_id           = "SO0005"
-      max_event_age         = 14400
-      lambda_qualifier      = "$LATEST"
-      s3_source = {
-        bucket = "solutions-us-east-1"
-        key    = "quota-monitor-for-aws/v6.3.0/sns-publisher.zip"
-      }
-    }
-  }
+  # default = {
+  #   provider_framework = {
+  #     name        = "QM-Helper-Provider-framework-onEvent"
+  #     description = "AWS CDK resource provider framework - onEvent"
+  #     runtime     = "nodejs18.x"
+  #     handler     = "framework.onEvent"
+  #     timeout     = 900
+  #     memory_size = 128
+  #     log_format  = "JSON"
+  #     log_group   = "/aws/lambda/QM-Helper-Provider-framework-onEvent"
+  #     log_level   = "INFO"
+  #     s3_source = {
+  #       bucket = "solutions-ap-southeast-1"
+  #       key    = "quota-monitor-for-aws/v6.3.0/asset7382a0addb9f34974a1ea6c6c9b063882af874828f366f5c93b2b7b64db15c94.zip"
+  #     }
+  #   }
+
+  #   helper = {
+  #     name        = "QM-Helper-Function"
+  #     description = "SO0005 quota-monitor-for-aws - QM-Helper-Function"
+  #     runtime     = "nodejs18.x"
+  #     handler     = "index.handler"
+  #     timeout     = 5
+  #     memory_size = 128
+  #     log_format  = "JSON"
+  #     log_group   = "/aws/lambda/QM-Helper-Function"
+  #     log_level   = "INFO"
+  #     s3_source = {
+  #       bucket = "solutions-ap-southeast-1"
+  #       key    = "quota-monitor-for-aws/v6.3.0/assetf4ee0c3d949f011b3f0f60d231fdacecab71c5f3ccf9674352231cedf831f6cd.zip"
+  #     }
+  #   }
+
+  #   slack_notifier = {
+  #     name        = "QM-SlackNotifier-Lambda"
+  #     description = "SO0005 quota-monitor-for-aws - QM-SlackNotifier-Lambda"
+  #     runtime     = "nodejs18.x"
+  #     handler     = "index.handler"
+  #     timeout     = 60
+  #     memory_size = 128
+  #     log_format  = "JSON"
+  #     log_group   = "/aws/lambda/QM-SlackNotifier-Lambda"
+  #     log_level   = "INFO"
+  #     s3_source = {
+  #       bucket = "solutions-ap-southeast-1"
+  #       key    = "quota-monitor-for-aws/v6.3.0/asset11434a0b3246f0b4445dd28fdbc9e4e7dc808ccf355077acd9b000c5d88e6713.zip"
+  #     }
+  #   }
+
+  #   sns_publisher = {
+  #     name        = "QM-SNSPublisher-Lambda"
+  #     description = "SO0005 quota-monitor-for-aws - QM-SNSPublisher-Lambda"
+  #     runtime     = "nodejs18.x"
+  #     handler     = "index.handler"
+  #     timeout     = 60
+  #     memory_size = 128
+  #     log_format  = "JSON"
+  #     log_group   = "/aws/lambda/QM-SNSPublisher-Lambda"
+  #     log_level   = "INFO"
+  #     s3_source = {
+  #       bucket = "solutions-ap-southeast-1"
+  #       key    = "quota-monitor-for-aws/v6.3.0/assete7a324e67e467d0c22e13b0693ca4efdceb0d53025c7fb45fe524870a5c18046.zip"
+  #     }
+  #   }
+
+  #   reporter = {
+  #     name        = "QM-Reporter-Lambda"
+  #     description = "SO0005 quota-monitor-for-aws - QM-Reporter-Lambda"
+  #     runtime     = "nodejs18.x"
+  #     handler     = "index.handler"
+  #     timeout     = 10
+  #     memory_size = 512
+  #     log_format  = "JSON"
+  #     log_group   = "/aws/lambda/QM-Reporter-Lambda"
+  #     log_level   = "INFO"
+  #     max_messages = "10"
+  #     max_loops    = "10"
+  #     s3_source = {
+  #       bucket = "solutions-ap-southeast-1"
+  #       key    = "quota-monitor-for-aws/v6.3.0/asseta6fda81c73d731886f04e1734d036f12ceb7b94c2efec30bb511f477ac58aa9c.zip"
+  #     }
+  #   }
+
+  #   deployment_manager = {
+  #     name        = "QM-Deployment-Manager-Lambda"
+  #     description = "SO0005 quota-monitor-for-aws - QM-Deployment-Manager-Lambda"
+  #     runtime     = "nodejs18.x"
+  #     handler     = "index.handler"
+  #     timeout     = 60
+  #     memory_size = 512
+  #     log_format  = "JSON"
+  #     log_group   = "/aws/lambda/QM-Deployment-Manager-Lambda"
+  #     log_level   = "INFO"
+  #     s3_source = {
+  #       bucket = "solutions-ap-southeast-1"
+  #       key    = "quota-monitor-for-aws/v6.3.0/asset6a1cf55956fc481a1f22a54b0fa78a3d78b7e61cd41e12bf80ac8c9404ff9eb2.zip"
+  #     }
+  #   }
+  # }
+}
+
+# Uncomment và thêm các biến còn thiếu
+
+variable "regions_list" {
+  type        = string
+  description = "List of regions to deploy spoke resources"
+  default     = "ap-southeast-1" # Hoặc giá trị mặc định phù hợp
+}
+
+variable "sns_spoke_region" {
+  type        = string
+  description = "Region where SNS topics will be created in spoke accounts"
+  default     = "ap-southeast-1"
+}
+
+variable "region_concurrency" {
+  type        = string
+  description = "Type of concurrency for regional deployments (SEQUENTIAL/PARALLEL)"
+  default     = "SEQUENTIAL"
+}
+
+variable "max_concurrent_percentage" {
+  type        = number
+  description = "Maximum percentage of concurrent deployments"
+  default     = 100
+}
+
+variable "failure_tolerance_percentage" {
+  type        = number
+  description = "Percentage of failures that can be tolerated during deployment"
+  default     = 0
+}
+
+variable "sq_notification_threshold" {
+  type        = number
+  description = "Threshold percentage for Service Quotas notifications"
+  default     = 80
+}
+
+variable "sq_monitoring_frequency" {
+  type        = number
+  description = "Frequency (in minutes) for monitoring Service Quotas"
+  default     = 5
+}
+
+variable "sq_report_ok_notifications" {
+  type        = bool
+  description = "Whether to report OK notifications for Service Quotas"
+  default     = false
+}
+
+variable "enable_account_deploy" {
+  type        = bool
+  description = "Whether to enable account deployment"
+  default     = true
 }
 
 # SNS
@@ -539,12 +611,12 @@ variable "sns_config" {
     name     = string
     protocol = string
   }))
-  default = {
-    publisher = {
-      name     = "SNSPublisher-Topic"
-      protocol = "email"
-    }
-  }
+  # default = {
+  #   publisher = {
+  #     name     = "SNSPublisher-Topic"
+  #     protocol = "email"
+  #   }
+  # }
 }
 
 variable "sns_emails" {
@@ -563,30 +635,30 @@ variable "sqs_queues_config" {
     actions             = string
     eventbridge_actions = optional(list(string))
   }))
-  default = {
-    slack_notifier_dlq = {
-      name    = "SlackNotifier-Lambda-DLQ"
-      actions = "sqs:*"
-    }
-    sns_publisher_dlq = {
-      name    = "SNSPublisher-Lambda-DLQ"
-      actions = "sqs:*"
-    }
-    summarizer_event_queue = {
-      name                = "Summarizer-EventQueue"
-      visibility_timeout  = 60
-      actions             = "sqs:*"
-      eventbridge_actions = ["sqs:SendMessage", "sqs:GetQueueAttributes", "sqs:GetQueueUrl"]
-    }
-    reporter_dlq = {
-      name    = "Reporter-Lambda-DLQ"
-      actions = "sqs:*"
-    }
-    deployment_manager_dlq = {
-      name    = "DeploymentManager-Lambda-DLQ"
-      actions = "sqs:*"
-    }
-  }
+  # default = {
+  #   slack_notifier_dlq = {
+  #     name    = "SlackNotifier-Lambda-DLQ"
+  #     actions = "sqs:*"
+  #   }
+  #   sns_publisher_dlq = {
+  #     name    = "SNSPublisher-Lambda-DLQ"
+  #     actions = "sqs:*"
+  #   }
+  #   summarizer_event_queue = {
+  #     name                = "Summarizer-EventQueue"
+  #     visibility_timeout  = 60
+  #     actions             = "sqs:*"
+  #     eventbridge_actions = ["sqs:SendMessage", "sqs:GetQueueAttributes", "sqs:GetQueueUrl"]
+  #   }
+  #   reporter_dlq = {
+  #     name    = "Reporter-Lambda-DLQ"
+  #     actions = "sqs:*"
+  #   }
+  #   deployment_manager_dlq = {
+  #     name    = "DeploymentManager-Lambda-DLQ"
+  #     actions = "sqs:*"
+  #   }
+  # }
 }
 
 # SSM parametes
@@ -601,14 +673,14 @@ variable "ssm_parameters_config" {
     tier        = optional(string, "Standard")
     tags        = optional(map(string), {})
   }))
-  default = {
-    notification_muting = {
-      name        = "/QuotaMonitor/NotificationConfiguration"
-      description = "Muting configuration for services and limits"
-      type        = "StringList"
-      tags        = {}
-    }
-  }
+  # default = {
+  #   notification_muting = {
+  #     name        = "/QuotaMonitor/NotificationConfiguration"
+  #     description = "Muting configuration for services and limits"
+  #     type        = "StringList"
+  #     tags        = {}
+  #   }
+  # }
 }
 
 # S3 Configuration
@@ -638,10 +710,10 @@ variable "s3_config" {
       }))
     })), [])
   })
-  default = {
-    bucket_name = "quota-monitor-source-code"
-    versioning  = true
-  }
+  # default = {
+  #   bucket_name = "quota-monitor-source-code"
+  #   versioning  = true
+  # }
 }
 
 variable "source_code_objects" {
@@ -650,24 +722,24 @@ variable "source_code_objects" {
     source_path = string
     s3_key      = string
   }))
-  default = {
-    provider_framework = {
-      source_path = "source_codes/framework-onEvent.zip" # Sửa tên file
-      s3_key      = "lambda/provider_framework.zip"
-    }
-    helper = {
-      source_path = "source_codes/helper-function.zip" # Sửa tên file
-      s3_key      = "lambda/helper.zip"
-    }
-    sns_publisher = {
-      source_path = "source_codes/sns-publisher.zip" # Sửa tên file
-      s3_key      = "lambda/sns_publisher.zip"
-    }
-    utils_layer = {
-      source_path = "source_codes/utils-layer.zip" # Sửa tên file
-      s3_key      = "layers/utils_layer.zip"
-    }
-  }
+  # default = {
+  #   provider_framework = {
+  #     source_path = "source_codes/framework-onEvent.zip" # Sửa tên file
+  #     s3_key      = "lambda/provider_framework.zip"
+  #   }
+  #   helper = {
+  #     source_path = "source_codes/helper-function.zip" # Sửa tên file
+  #     s3_key      = "lambda/helper.zip"
+  #   }
+  #   sns_publisher = {
+  #     source_path = "source_codes/sns-publisher.zip" # Sửa tên file
+  #     s3_key      = "lambda/sns_publisher.zip"
+  #   }
+  #   utils_layer = {
+  #     source_path = "source_codes/utils-layer.zip" # Sửa tên file
+  #     s3_key      = "layers/utils_layer.zip"
+  #   }
+  # }
 }
 
 variable "create_archive" {

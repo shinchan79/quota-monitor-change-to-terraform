@@ -27,3 +27,26 @@ module "lambda_layer" {
 
   depends_on = [module.s3]
 }
+
+
+    # "QMUtilsLayerQMUtilsLayerLayer80D5D993": {
+    #   "Type": "AWS::Lambda::LayerVersion",
+    #   "Properties": {
+    #     "CompatibleRuntimes": [
+    #       "nodejs18.x"
+    #     ],
+    #     "Content": {
+    #       "S3Bucket": {
+    #         "Fn::Sub": "solutions-${AWS::Region}"
+    #       },
+    #       "S3Key": "quota-monitor-for-aws/v6.3.0/assete8b91b89616aa81e100a9f9ce53981ad5df4ba7439cebca83d5dc68349ed3703.zip"
+    #     },
+    #     "LayerName": "QM-UtilsLayer"
+    #   },
+    #   "Metadata": {
+    #     "aws:cdk:path": "quota-monitor-hub-no-ou/QM-UtilsLayer/QM-UtilsLayer-Layer/Resource",
+    #     "aws:asset:path": "asset.e8b91b89616aa81e100a9f9ce53981ad5df4ba7439cebca83d5dc68349ed3703.zip",
+    #     "aws:asset:is-bundled": false,
+    #     "aws:asset:property": "Content"
+    #   }
+    # },

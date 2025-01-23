@@ -31,6 +31,7 @@ locals {
       name                  = coalesce(v.name, k)
       function_name         = substr(format("%s-%s", var.master_prefix, coalesce(v.name, k)), 0, 63)
       handler               = v.handler
+      description           = try(v.description, null)
       runtime               = v.runtime
       role_arn              = try(v.role_arn, null)
       role_key              = try(v.role_key, null)

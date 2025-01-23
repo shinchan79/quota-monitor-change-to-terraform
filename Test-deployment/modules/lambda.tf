@@ -21,6 +21,7 @@ resource "aws_lambda_function" "lambda" {
   for_each = local.lambda_functions_normalized
 
   function_name = each.value.function_name
+  description   = each.value.description
   role          = try(aws_iam_role.role[each.value.role_key].arn, each.value.role_arn)
   handler       = each.value.handler
   runtime       = each.value.runtime

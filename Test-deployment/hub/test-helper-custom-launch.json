@@ -1,0 +1,13 @@
+{
+    "RequestType": "Create",
+    "ResourceType": "Custom::LaunchData",
+    "ResponseURL": "http://pre-signed-S3-url-for-response",
+    "StackId": "arn:aws:cloudformation:ap-southeast-1:405142580014:stack/qm/test-stack",
+    "RequestId": "test-request-id",
+    "ResourceProperties": {
+      "SOLUTION_UUID": "458d272a-0c67-6be0-74c0-f075e79429ab",
+      "ServiceToken": "arn:aws:lambda:ap-southeast-1:405142580014:function:qm-Helper-Function"
+    },
+    "LogicalResourceId": "LaunchData",
+    "PhysicalResourceId": "qm-Helper-Function"
+  }

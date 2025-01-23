@@ -49,6 +49,9 @@ variable "dynamodb_tables" {
       name = string
       type = string
     }))
+    point_in_time_recovery = optional(object({
+      enabled = bool
+    }))
     local_secondary_index = optional(list(object({
       name               = string
       range_key          = string

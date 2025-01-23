@@ -1,0 +1,12 @@
+{
+    "RequestType": "Create",
+    "ServiceToken": "arn:aws:lambda:ap-southeast-1:405142580014:function:qm-QM-Helper-Provider-framework-onEvent",
+    "ResponseURL": "https://cloudformation-custom-resource-response-apsoutheast1.s3-ap-southeast-1.amazonaws.com/test",
+    "StackId": "arn:aws:cloudformation:ap-southeast-1:405142580014:stack/test-stack/1234",
+    "RequestId": "test-request-id",
+    "LogicalResourceId": "TestResource",
+    "ResourceType": "Custom::CreateUUID",
+    "ResourceProperties": {
+      "ServiceToken": "arn:aws:lambda:ap-southeast-1:405142580014:function:qm-QM-Helper-Provider-framework-onEvent"
+    }
+  }

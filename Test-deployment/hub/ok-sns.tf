@@ -24,3 +24,23 @@ module "sns" {
     }
   } : {}
 }
+
+
+
+
+    # "QMEmailSubscription32E71F90": {
+    #   "Type": "AWS::SNS::Subscription",
+    #   "Properties": {
+    #     "Endpoint": {
+    #       "Ref": "SNSEmail"
+    #     },
+    #     "Protocol": "email",
+    #     "TopicArn": {
+    #       "Ref": "QMSNSPublisherQMSNSPublisherSNSTopic7EE2EBF4"
+    #     }
+    #   },
+    #   "Metadata": {
+    #     "aws:cdk:path": "quota-monitor-hub-no-ou/QM-EmailSubscription/Resource"
+    #   },
+    #   "Condition": "EmailTrueCondition"
+    # },

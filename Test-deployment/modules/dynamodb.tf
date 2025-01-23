@@ -29,6 +29,13 @@ resource "aws_dynamodb_table" "table" {
     }
   }
 
+  dynamic "point_in_time_recovery" {
+    for_each = each.value.point_in_time_recovery != null ? [each.value.point_in_time_recovery] : []
+    content {
+      enabled = point_in_time_recovery.value.enabled
+    }
+  }
+
   dynamic "local_secondary_index" {
     for_each = { for v in each.value.local_secondary_index : v.name => v }
 

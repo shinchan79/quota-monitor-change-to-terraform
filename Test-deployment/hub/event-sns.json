@@ -1,0 +1,8 @@
+[
+    {
+      "Source": "aws-solutions.quota-monitor",
+      "DetailType": "Service Quotas Utilization Notification",
+      "Detail": "{\"check-item-detail\": {\"Service\": \"vpc\",\"Limit Name\": \"VPCs per Region\",\"Limit Code\": \"L-F678F1CE\",\"Region\": \"ap-southeast-1\",\"Resource\": \"VPC\"},\"status\": \"WARN\"}",
+      "EventBusName": "qm-QuotaMonitorBus"
+    }
+  ]

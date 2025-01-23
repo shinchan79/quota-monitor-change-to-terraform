@@ -1,0 +1,1 @@
+{"Status":"SUCCESS","Reason":"{\"Data\":\"NOV\"}","PhysicalResourceId":"qm-Helper-Function","StackId":"arn:aws:cloudformation:ap-southeast-1:405142580014:stack/qm/test-stack","RequestId":"test-request-id","LogicalResourceId":"LaunchData","Data":{"Data":"NOV"}}

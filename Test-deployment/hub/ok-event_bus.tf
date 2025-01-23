@@ -26,3 +26,13 @@ module "event_bus" {
     }
   }
 }
+
+    # "QMBusFF5C6C0C": {
+    #   "Type": "AWS::Events::EventBus",
+    #   "Properties": {
+    #     "Name": "QuotaMonitorBus"
+    #   },
+    #   "Metadata": {
+    #     "aws:cdk:path": "quota-monitor-hub-no-ou/QM-Bus/Resource"
+    #   }
+    # },
