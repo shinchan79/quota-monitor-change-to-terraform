@@ -572,10 +572,16 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "solutions-${AWS::Region}"
-          },
-          "S3Key": "quota-monitor-for-aws/v6.3.0/asset7382a0addb9f34974a1ea6c6c9b063882af874828f366f5c93b2b7b64db15c94.zip"
+          "S3Bucket": {"Ref": "S3BucketName"},
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {"Ref": "S3LambdaKeyPrefix"},
+                "list-manager-provider.zip"
+              ]
+            ]
+          }
         },
         "Description": "AWS CDK resource provider framework - onEvent (quota-monitor-sq-spoke/QM-ListManager/QM-ListManager-Provider)",
         "Environment": {
@@ -596,7 +602,20 @@
           ]
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 900
+        "Timeout": 900,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "QMDefaultSecurityGroup",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": {
+            "Ref": "SubnetIds"
+          }
+        }
       },
       "DependsOn": [
         "QMListManagerQMListManagerProviderframeworkonEventServiceRoleDefaultPolicy60F3D9D1",
@@ -860,10 +879,16 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "solutions-${AWS::Region}"
-          },
-          "S3Key": "quota-monitor-for-aws/v6.3.0/asset4ae69af36e954d598ae25d7f2f8f5ea5ecb93bf4ba61963aa7d8d571cf71ecce.zip"
+          "S3Bucket": {"Ref": "S3BucketName"},
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {"Ref": "S3LambdaKeyPrefix"},
+                "cw-poller.zip"
+              ]
+            ]
+          }
         },
         "DeadLetterConfig": {
           "TargetArn": {
@@ -914,7 +939,20 @@
           ]
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 900
+        "Timeout": 900,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "QMDefaultSecurityGroup",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": {
+            "Ref": "SubnetIds"
+          }
+        }
       },
       "DependsOn": [
         "QMCWPollerQMCWPollerLambdaServiceRoleDefaultPolicy626BCE22",
@@ -971,8 +1009,7 @@
             }
           }
         ]
-      },
-
+      }
     },
     "QMUtilizationOKEventsRoleC12899D6": {
       "Type": "AWS::IAM::Role",

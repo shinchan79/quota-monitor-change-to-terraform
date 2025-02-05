@@ -19,6 +19,25 @@
           "Parameters": [
             "TARefreshRate"
           ]
+        },
+        {
+          "Label": {
+            "default": "VPC Configuration"
+          },
+          "Parameters": [
+            "VpcId",
+            "SubnetIds"
+          ]
+        },
+        {
+          "Label": {
+            "default": "S3 Configuration"
+          },
+          "Parameters": [
+            "S3BucketName",
+            "S3LambdaKeyPrefix",
+            "S3LayerKeyPrefix"
+          ]
         }
       ],
       "ParameterLabels": {
@@ -27,6 +46,21 @@
         },
         "TARefreshRate": {
           "default": "Trusted Advisor Refresh Rate"
+        },
+        "VpcId": {
+          "default": "VPC ID for Lambda functions"
+        },
+        "SubnetIds": {
+          "default": "Subnet IDs for Lambda functions"
+        },
+        "S3BucketName": {
+          "default": "S3 bucket containing deployment assets"
+        },
+        "S3LambdaKeyPrefix": {
+          "default": "S3 key prefix for Lambda functions"
+        },
+        "S3LayerKeyPrefix": {
+          "default": "S3 key prefix for Lambda layers"
         }
       }
     }
@@ -44,9 +78,47 @@
         "rate(1 day)"
       ],
       "Description": "The rate at which to refresh Trusted Advisor checks"
+    },
+    "VpcId": {
+      "Type": "AWS::EC2::VPC::Id",
+      "Description": "VPC ID for Lambda functions"
+    },
+    "SubnetIds": {
+      "Type": "List<AWS::EC2::Subnet::Id>",
+      "Description": "List of subnet IDs for Lambda functions"
+    },
+    "S3BucketName": {
+      "Type": "String",
+      "Description": "Name of the S3 bucket containing deployment assets"
+    },
+    "S3LambdaKeyPrefix": {
+      "Type": "String",
+      "Default": "quota-monitor-for-aws/v6.3.0/lambda/",
+      "Description": "S3 key prefix for Lambda function assets"
+    },
+    "S3LayerKeyPrefix": {
+      "Type": "String",
+      "Default": "quota-monitor-for-aws/v6.3.0/layers/",
+      "Description": "S3 key prefix for Lambda layer assets"
     }
   },
   "Resources": {
+    "QMDefaultSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Default security group for Quota Monitor Lambda functions",
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic",
+            "IpProtocol": "-1"
+          }
+        ]
+      }
+    },
     "TAOkRule3B6A3866": {
       "Type": "AWS::Events::Rule",
       "Properties": {
@@ -339,10 +411,16 @@
           "nodejs18.x"
         ],
         "Content": {
-          "S3Bucket": {
-            "Fn::Sub": "solutions-${AWS::Region}"
-          },
-          "S3Key": "quota-monitor-for-aws/v6.3.0/assete8b91b89616aa81e100a9f9ce53981ad5df4ba7439cebca83d5dc68349ed3703.zip"
+          "S3Bucket": {"Ref": "S3BucketName"},
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {"Ref": "S3LayerKeyPrefix"},
+                "utils-layer.zip"
+              ]
+            ]
+          }
         },
         "LayerName": "QM-UtilsLayer"
       }
@@ -455,6 +533,18 @@
                 ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+              ]
+            ]
           }
         ]
       }
@@ -494,10 +584,16 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "solutions-${AWS::Region}"
-          },
-          "S3Key": "quota-monitor-for-aws/v6.3.0/assete062344a6a45f8d5d2900b99e0126935391d50d4577da563c08475673a012f4c.zip"
+          "S3Bucket": {"Ref": "S3BucketName"},
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {"Ref": "S3LambdaKeyPrefix"},
+                "ta-refresher.zip"
+              ]
+            ]
+          }
         },
         "DeadLetterConfig": {
           "TargetArn": {
@@ -531,7 +627,20 @@
           ]
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 60
+        "Timeout": 60,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "QMDefaultSecurityGroup",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": {
+            "Ref": "SubnetIds"
+          }
+        }
       },
       "DependsOn": [
         "QMTARefresherQMTARefresherLambdaServiceRoleDefaultPolicyF0E3A261",
