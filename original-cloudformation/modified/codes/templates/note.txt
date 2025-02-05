@@ -1,0 +1,8 @@
+s3://your-bucket/
+  quota-monitor-for-aws/v6.3.0/
+    lambda/
+      sns-publisher.zip
+    layers/
+      utils-layer.zip
+
+
