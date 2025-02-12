@@ -1892,7 +1892,43 @@
         "ManagedExecution": {
           "Active": true
         },
-        "Parameters": [],
+        "Parameters": [
+          {
+        "ParameterKey": "VpcId",
+        "ParameterValue": {
+          "Ref": "VpcId"
+        }
+      },
+            {
+        "ParameterKey": "SubnetIds",
+        "ParameterValue": {
+          "Fn::Join": [
+            ",",
+            {
+              "Ref": "SubnetIds"
+            }
+          ]
+        }
+      },
+      {
+        "ParameterKey": "S3BucketName",
+        "ParameterValue": {
+          "Ref": "S3BucketName"
+        }
+      },
+      {
+        "ParameterKey": "S3LambdaKeyPrefix",
+        "ParameterValue": {
+          "Ref": "S3LambdaKeyPrefix"
+        }
+      },
+      {
+        "ParameterKey": "S3LayerKeyPrefix", 
+        "ParameterValue": {
+          "Ref": "S3LayerKeyPrefix"
+        }
+      }
+        ],
         "PermissionModel": "SERVICE_MANAGED",
         "StackSetName": "QM-SNS-Spoke-StackSet",
         "TemplateURL": {

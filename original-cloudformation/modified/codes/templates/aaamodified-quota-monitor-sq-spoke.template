@@ -578,7 +578,7 @@
               "",
               [
                 {"Ref": "S3LambdaKeyPrefix"},
-                "list-manager-provider.zip"
+                "framework-onEvent.zip.zip"
               ]
             ]
           }
