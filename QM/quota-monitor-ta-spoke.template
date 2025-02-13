@@ -54,7 +54,7 @@
           "default": "Subnet IDs for Lambda functions"
         },
         "S3BucketName": {
-          "default": "S3 bucket containing deployment assets"
+          "default": "Base name of the S3 bucket containing deployment assets (without region suffix)"
         },
         "S3LambdaKeyPrefix": {
           "default": "S3 key prefix for Lambda functions"
@@ -413,11 +413,11 @@
         "Content": {
           "S3Bucket": {
             "Fn::Join": [
-              "-",
-              [
-                {"Ref": "S3BucketName"},
-                {"Ref": "AWS::Region"}
-              ]
+                "-",
+                [
+                    {"Ref": "S3BucketName"},
+                    {"Ref": "AWS::Region"}
+                ]
             ]
           },
           "S3Key": {
@@ -594,11 +594,11 @@
         "Code": {
           "S3Bucket": {
             "Fn::Join": [
-              "-",
-              [
-                {"Ref": "S3BucketName"},
-                {"Ref": "AWS::Region"}
-              ]
+                "-",
+                [
+                    {"Ref": "S3BucketName"},
+                    {"Ref": "AWS::Region"}
+                ]
             ]
           },
           "S3Key": {

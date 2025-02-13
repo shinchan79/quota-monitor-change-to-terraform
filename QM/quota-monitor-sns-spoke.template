@@ -12,7 +12,7 @@
     },
     "S3BucketName": {
       "Type": "String",
-      "Description": "Name of the S3 bucket containing deployment assets"
+      "Description": "Base name of the S3 bucket containing deployment assets (without region suffix)"
     },
     "S3LambdaKeyPrefix": {
       "Type": "String",
@@ -104,13 +104,13 @@
         ],
         "Content": {
           "S3Bucket": {
-            "Fn::Join": [
-              "-",
-              [
-                {"Ref": "S3BucketName"},
-                {"Ref": "AWS::Region"}
+              "Fn::Join": [
+                  "-",
+                  [
+                      {"Ref": "S3BucketName"},
+                      {"Ref": "AWS::Region"}
+                  ]
               ]
-            ]
           },
           "S3Key": {
             "Fn::Join": [
@@ -394,13 +394,13 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Fn::Join": [
-              "-",
-              [
-                {"Ref": "S3BucketName"},
-                {"Ref": "AWS::Region"}
+              "Fn::Join": [
+                  "-",
+                  [
+                      {"Ref": "S3BucketName"},
+                      {"Ref": "AWS::Region"}
+                  ]
               ]
-            ]
           },
           "S3Key": {
             "Fn::Join": [

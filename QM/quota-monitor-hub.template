@@ -209,7 +209,7 @@
     },
     "S3BucketName": {
       "Type": "String", 
-      "Description": "Name of the S3 bucket containing deployment assets"
+      "Description": "Base name of the S3 bucket containing deployment assets (without region suffix)"
     },
     "S3LambdaKeyPrefix": {
       "Type": "String",
@@ -705,13 +705,13 @@
       "Properties": {
         "Code": {
             "S3Bucket": {
-              "Fn::Join": [
-                "-",
-                [
-                  {"Ref": "S3BucketName"},
-                  {"Ref": "AWS::Region"}
+                "Fn::Join": [
+                    "-",
+                    [
+                        {"Ref": "S3BucketName"},
+                        {"Ref": "AWS::Region"}
+                    ]
                 ]
-              ]
             },
             "S3Key": {
                 "Fn::Join": [
@@ -893,13 +893,13 @@
       "Properties": {
         "Code": {
             "S3Bucket": {
-              "Fn::Join": [
-                "-",
-                [
-                  {"Ref": "S3BucketName"},
-                  {"Ref": "AWS::Region"}
+                "Fn::Join": [
+                    "-",
+                    [
+                        {"Ref": "S3BucketName"},
+                        {"Ref": "AWS::Region"}
+                    ]
                 ]
-              ]
             },
             "S3Key": {
                 "Fn::Join": [
@@ -1232,13 +1232,13 @@
       "Properties": {
         "Code": {
             "S3Bucket": {
-              "Fn::Join": [
-                "-",
-                [
-                  {"Ref": "S3BucketName"},
-                  {"Ref": "AWS::Region"}
+                "Fn::Join": [
+                    "-",
+                    [
+                        {"Ref": "S3BucketName"},
+                        {"Ref": "AWS::Region"}
+                    ]
                 ]
-              ]
             },
             "S3Key": {
                 "Fn::Join": [
@@ -1706,13 +1706,13 @@
       "Properties": {
         "Code": {
             "S3Bucket": {
-              "Fn::Join": [
-                "-",
-                [
-                  {"Ref": "S3BucketName"},
-                  {"Ref": "AWS::Region"}
+                "Fn::Join": [
+                    "-",
+                    [
+                        {"Ref": "S3BucketName"},
+                        {"Ref": "AWS::Region"}
+                    ]
                 ]
-              ]
             },
             "S3Key": {
                 "Fn::Join": [
@@ -1859,23 +1859,25 @@
         "StackSetName": "QM-TA-Spoke-StackSet",
         "TemplateURL": {
             "Fn::Join": [
-                "",
-                [
-                    "https://",
-                    {"Ref": "S3BucketName"},
-                    ".s3.",
-                    {"Ref": "AWS::Region"},
-                    ".amazonaws.com",
-                    {"Fn::If": ["IsChinaPartition", ".cn", ""]},
-                    "/",
-                    {"Ref": "S3TemplateKeyPrefix"},
-                    {"Fn::If": [
-                        "IsChinaPartition",
-                        "quota-monitor-ta-spoke-cn.template",
-                        "quota-monitor-ta-spoke.template"
-                    ]}
-                ]
-            ]
+              "",
+              [
+                  "https://",
+                  {"Ref": "S3BucketName"}, 
+                  "-",
+                  {"Ref": "AWS::Region"},
+                  ".s3.",
+                  {"Ref": "AWS::Region"},
+                  ".amazonaws.com",
+                  {"Fn::If": ["IsChinaPartition", ".cn", ""]},
+                  "/",
+                  {"Ref": "S3TemplateKeyPrefix"},
+                  {"Fn::If": [
+                      "IsChinaPartition",
+                      "quota-monitor-ta-spoke-cn.template",
+                      "quota-monitor-ta-spoke.template"
+                  ]}
+              ]
+          ]
         }
       }
     },
@@ -1957,23 +1959,25 @@
         "StackSetName": "QM-SQ-Spoke-StackSet",
         "TemplateURL": {
             "Fn::Join": [
-                "",
-                [
-                    "https://",
-                    {"Ref": "S3BucketName"},
-                    ".s3.",
-                    {"Ref": "AWS::Region"},
-                    ".amazonaws.com",
-                    {"Fn::If": ["IsChinaPartition", ".cn", ""]},
-                    "/",
-                    {"Ref": "S3TemplateKeyPrefix"},
-                    {"Fn::If": [
-                        "IsChinaPartition",
-                        "quota-monitor-sq-spoke-cn.template",
-                        "quota-monitor-sq-spoke.template"
-                    ]}
-                ]
-            ]
+              "",
+              [
+                  "https://",
+                  {"Ref": "S3BucketName"}, 
+                  "-",
+                  {"Ref": "AWS::Region"},
+                  ".s3.",
+                  {"Ref": "AWS::Region"},
+                  ".amazonaws.com",
+                  {"Fn::If": ["IsChinaPartition", ".cn", ""]},
+                  "/",
+                  {"Ref": "S3TemplateKeyPrefix"},
+                  {"Fn::If": [
+                      "IsChinaPartition",
+                      "quota-monitor-ta-spoke-cn.template",
+                      "quota-monitor-ta-spoke.template"
+                  ]}
+              ]
+          ]
         }
       }
     },
@@ -2020,23 +2024,25 @@
         "StackSetName": "QM-SNS-Spoke-StackSet",
         "TemplateURL": {
             "Fn::Join": [
-                "",
-                [
-                    "https://",
-                    {"Ref": "S3BucketName"},
-                    ".s3.",
-                    {"Ref": "AWS::Region"},
-                    ".amazonaws.com",
-                    {"Fn::If": ["IsChinaPartition", ".cn", ""]},
-                    "/",
-                    {"Ref": "S3TemplateKeyPrefix"},
-                    {"Fn::If": [
-                        "IsChinaPartition",
-                        "quota-monitor-sns-spoke-cn.template",
-                        "quota-monitor-sns-spoke.template"
-                    ]}
-                ]
-            ]
+              "",
+              [
+                  "https://",
+                  {"Ref": "S3BucketName"}, 
+                  "-",
+                  {"Ref": "AWS::Region"},
+                  ".s3.",
+                  {"Ref": "AWS::Region"},
+                  ".amazonaws.com",
+                  {"Fn::If": ["IsChinaPartition", ".cn", ""]},
+                  "/",
+                  {"Ref": "S3TemplateKeyPrefix"},
+                  {"Fn::If": [
+                      "IsChinaPartition",
+                      "quota-monitor-ta-spoke-cn.template",
+                      "quota-monitor-ta-spoke.template"
+                  ]}
+              ]
+          ]
         }
       }
     },
@@ -2603,13 +2609,13 @@
       "Properties": {
         "Code": {
             "S3Bucket": {
-              "Fn::Join": [
-                "-",
-                [
-                  {"Ref": "S3BucketName"},
-                  {"Ref": "AWS::Region"}
+                "Fn::Join": [
+                    "-",
+                    [
+                        {"Ref": "S3BucketName"},
+                        {"Ref": "AWS::Region"}
+                    ]
                 ]
-              ]
             },
             "S3Key": {
                 "Fn::Join": [
