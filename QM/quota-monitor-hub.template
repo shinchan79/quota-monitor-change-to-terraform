@@ -208,7 +208,7 @@
       "Description": "List of subnet IDs for Lambda functions"
     },
     "S3BucketName": {
-      "Type": "String", 
+      "Type": "String",
       "Description": "Base name of the S3 bucket containing deployment assets (without region suffix)"
     },
     "S3LambdaKeyPrefix": {
@@ -217,7 +217,7 @@
       "Description": "S3 key prefix for Lambda function assets"
     },
     "S3LayerKeyPrefix": {
-      "Type": "String", 
+      "Type": "String",
       "Default": "quota-monitor-for-aws/v6.3.0/layers/",
       "Description": "S3 key prefix for Lambda layer assets"
     },
@@ -635,24 +635,30 @@
           "nodejs18.x"
         ],
         "Content": {
-            "S3Bucket": {
-              "Fn::Join": [
-                "-",
-                [
-                  {"Ref": "S3BucketName"},
-                  {"Ref": "AWS::Region"}
-                ]
+          "S3Bucket": {
+            "Fn::Join": [
+              "-",
+              [
+                {
+                  "Ref": "S3BucketName"
+                },
+                {
+                  "Ref": "AWS::Region"
+                }
               ]
-            },
-            "S3Key": {
-                "Fn::Join": [
-                    "",
-                    [
-                        {"Ref": "S3LayerKeyPrefix"},
-                        "utils-layer.zip"
-                    ]
-                ]
-            }
+            ]
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "S3LayerKeyPrefix"
+                },
+                "utils-layer.zip"
+              ]
+            ]
+          }
         },
         "LayerName": "QM-UtilsLayer"
       }
@@ -704,24 +710,30 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-            "S3Bucket": {
-                "Fn::Join": [
-                    "-",
-                    [
-                        {"Ref": "S3BucketName"},
-                        {"Ref": "AWS::Region"}
-                    ]
-                ]
-            },
-            "S3Key": {
-                "Fn::Join": [
-                    "",
-                    [
-                        {"Ref": "S3LambdaKeyPrefix"},
-                        "helper-function.zip"
-                    ]
-                ]
-            }
+          "S3Bucket": {
+            "Fn::Join": [
+              "-",
+              [
+                {
+                  "Ref": "S3BucketName"
+                },
+                {
+                  "Ref": "AWS::Region"
+                }
+              ]
+            ]
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "S3LambdaKeyPrefix"
+                },
+                "helper-function.zip"
+              ]
+            ]
+          }
         },
         "Description": "SO0005 quota-monitor-for-aws - QM-Helper-Function",
         "Environment": {
@@ -892,24 +904,30 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-            "S3Bucket": {
-                "Fn::Join": [
-                    "-",
-                    [
-                        {"Ref": "S3BucketName"},
-                        {"Ref": "AWS::Region"}
-                    ]
-                ]
-            },
-            "S3Key": {
-                "Fn::Join": [
-                    "",
-                    [
-                        {"Ref": "S3LambdaKeyPrefix"},
-                        "framework-onEvent.zip"
-                    ]
-                ]
-            }
+          "S3Bucket": {
+            "Fn::Join": [
+              "-",
+              [
+                {
+                  "Ref": "S3BucketName"
+                },
+                {
+                  "Ref": "AWS::Region"
+                }
+              ]
+            ]
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "S3LambdaKeyPrefix"
+                },
+                "framework-onEvent.zip"
+              ]
+            ]
+          }
         },
         "Description": "AWS CDK resource provider framework - onEvent (quota-monitor-hub/QM-Helper/QM-Helper-Provider)",
         "Environment": {
@@ -1231,24 +1249,30 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-            "S3Bucket": {
-                "Fn::Join": [
-                    "-",
-                    [
-                        {"Ref": "S3BucketName"},
-                        {"Ref": "AWS::Region"}
-                    ]
-                ]
-            },
-            "S3Key": {
-                "Fn::Join": [
-                    "",
-                    [
-                        {"Ref": "S3LambdaKeyPrefix"},
-                        "sns-publisher.zip"
-                    ]
-                ]
-            }
+          "S3Bucket": {
+            "Fn::Join": [
+              "-",
+              [
+                {
+                  "Ref": "S3BucketName"
+                },
+                {
+                  "Ref": "AWS::Region"
+                }
+              ]
+            ]
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "S3LambdaKeyPrefix"
+                },
+                "sns-publisher.zip"
+              ]
+            ]
+          }
         },
         "DeadLetterConfig": {
           "TargetArn": {
@@ -1705,24 +1729,30 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-            "S3Bucket": {
-                "Fn::Join": [
-                    "-",
-                    [
-                        {"Ref": "S3BucketName"},
-                        {"Ref": "AWS::Region"}
-                    ]
-                ]
-            },
-            "S3Key": {
-                "Fn::Join": [
-                    "",
-                    [
-                        {"Ref": "S3LambdaKeyPrefix"},
-                        "reporter.zip"
-                    ]
-                ]
-            }
+          "S3Bucket": {
+            "Fn::Join": [
+              "-",
+              [
+                {
+                  "Ref": "S3BucketName"
+                },
+                {
+                  "Ref": "AWS::Region"
+                }
+              ]
+            ]
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "S3LambdaKeyPrefix"
+                },
+                "reporter.zip"
+              ]
+            ]
+          }
         },
         "DeadLetterConfig": {
           "TargetArn": {
@@ -1833,7 +1863,12 @@
           {
             "ParameterKey": "SubnetIds",
             "ParameterValue": {
-              "Fn::Join": [",", {"Ref": "SubnetIds"}]
+              "Fn::Join": [
+                ",",
+                {
+                  "Ref": "SubnetIds"
+                }
+              ]
             }
           },
           {
@@ -1858,25 +1893,41 @@
         "PermissionModel": "SERVICE_MANAGED",
         "StackSetName": "QM-TA-Spoke-StackSet",
         "TemplateURL": {
-            "Fn::Join": [
-              "",
-              [
-                  "https://",
-                  {"Ref": "S3BucketName"}, 
-                  "-",
-                  {"Ref": "AWS::Region"},
-                  ".s3.",
-                  {"Ref": "AWS::Region"},
-                  ".amazonaws.com",
-                  {"Fn::If": ["IsChinaPartition", ".cn", ""]},
-                  "/",
-                  {"Ref": "S3TemplateKeyPrefix"},
-                  {"Fn::If": [
-                      "IsChinaPartition",
-                      "quota-monitor-ta-spoke-cn.template",
-                      "quota-monitor-ta-spoke.template"
-                  ]}
-              ]
+          "Fn::Join": [
+            "",
+            [
+              "https://",
+              {
+                "Ref": "S3BucketName"
+              },
+              "-",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".amazonaws.com",
+              {
+                "Fn::If": [
+                  "IsChinaPartition",
+                  ".cn",
+                  ""
+                ]
+              },
+              "/",
+              {
+                "Ref": "S3TemplateKeyPrefix"
+              },
+              {
+                "Fn::If": [
+                  "IsChinaPartition",
+                  "quota-monitor-ta-spoke-cn.template",
+                  "quota-monitor-ta-spoke.template"
+                ]
+              }
+            ]
           ]
         }
       }
@@ -1933,7 +1984,12 @@
           {
             "ParameterKey": "SubnetIds",
             "ParameterValue": {
-              "Fn::Join": [",", {"Ref": "SubnetIds"}]
+              "Fn::Join": [
+                ",",
+                {
+                  "Ref": "SubnetIds"
+                }
+              ]
             }
           },
           {
@@ -1949,7 +2005,7 @@
             }
           },
           {
-            "ParameterKey": "S3LayerKeyPrefix", 
+            "ParameterKey": "S3LayerKeyPrefix",
             "ParameterValue": {
               "Ref": "S3LayerKeyPrefix"
             }
@@ -1958,25 +2014,41 @@
         "PermissionModel": "SERVICE_MANAGED",
         "StackSetName": "QM-SQ-Spoke-StackSet",
         "TemplateURL": {
-            "Fn::Join": [
-              "",
-              [
-                  "https://",
-                  {"Ref": "S3BucketName"}, 
-                  "-",
-                  {"Ref": "AWS::Region"},
-                  ".s3.",
-                  {"Ref": "AWS::Region"},
-                  ".amazonaws.com",
-                  {"Fn::If": ["IsChinaPartition", ".cn", ""]},
-                  "/",
-                  {"Ref": "S3TemplateKeyPrefix"},
-                  {"Fn::If": [
-                      "IsChinaPartition",
-                      "quota-monitor-ta-spoke-cn.template",
-                      "quota-monitor-ta-spoke.template"
-                  ]}
-              ]
+          "Fn::Join": [
+            "",
+            [
+              "https://",
+              {
+                "Ref": "S3BucketName"
+              },
+              "-",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".amazonaws.com",
+              {
+                "Fn::If": [
+                  "IsChinaPartition",
+                  ".cn",
+                  ""
+                ]
+              },
+              "/",
+              {
+                "Ref": "S3TemplateKeyPrefix"
+              },
+              {
+                "Fn::If": [
+                  "IsChinaPartition",
+                  "quota-monitor-sq-spoke-cn.template",
+                  "quota-monitor-sq-spoke.template"
+                ]
+              }
+            ]
           ]
         }
       }
@@ -2008,49 +2080,78 @@
           },
           {
             "ParameterKey": "VpcId",
-            "ParameterValue": {"Ref": "VpcId"}
+            "ParameterValue": {
+              "Ref": "VpcId"
+            }
           },
           {
             "ParameterKey": "SubnetIds",
             "ParameterValue": {
-              "Fn::Join": [",", {"Ref": "SubnetIds"}]
+              "Fn::Join": [
+                ",",
+                {
+                  "Ref": "SubnetIds"
+                }
+              ]
             }
           },
           {
-            "ParameterKey": "S3BucketName", 
-            "ParameterValue": {"Ref": "S3BucketName"}
+            "ParameterKey": "S3BucketName",
+            "ParameterValue": {
+              "Ref": "S3BucketName"
+            }
           },
           {
             "ParameterKey": "S3LambdaKeyPrefix",
-            "ParameterValue": {"Ref": "S3LambdaKeyPrefix"}
+            "ParameterValue": {
+              "Ref": "S3LambdaKeyPrefix"
+            }
           },
           {
             "ParameterKey": "S3LayerKeyPrefix",
-            "ParameterValue": {"Ref": "S3LayerKeyPrefix"}
+            "ParameterValue": {
+              "Ref": "S3LayerKeyPrefix"
+            }
           }
         ],
         "PermissionModel": "SERVICE_MANAGED",
         "StackSetName": "QM-SNS-Spoke-StackSet",
         "TemplateURL": {
-            "Fn::Join": [
-              "",
-              [
-                  "https://",
-                  {"Ref": "S3BucketName"}, 
-                  "-",
-                  {"Ref": "AWS::Region"},
-                  ".s3.",
-                  {"Ref": "AWS::Region"},
-                  ".amazonaws.com",
-                  {"Fn::If": ["IsChinaPartition", ".cn", ""]},
-                  "/",
-                  {"Ref": "S3TemplateKeyPrefix"},
-                  {"Fn::If": [
-                      "IsChinaPartition",
-                      "quota-monitor-ta-spoke-cn.template",
-                      "quota-monitor-ta-spoke.template"
-                  ]}
-              ]
+          "Fn::Join": [
+            "",
+            [
+              "https://",
+              {
+                "Ref": "S3BucketName"
+              },
+              "-",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".amazonaws.com",
+              {
+                "Fn::If": [
+                  "IsChinaPartition",
+                  ".cn",
+                  ""
+                ]
+              },
+              "/",
+              {
+                "Ref": "S3TemplateKeyPrefix"
+              },
+              {
+                "Fn::If": [
+                  "IsChinaPartition",
+                  "quota-monitor-ta-spoke-cn.template",
+                  "quota-monitor-ta-spoke.template"
+                ]
+              }
+            ]
           ]
         }
       }
@@ -2617,24 +2718,30 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-            "S3Bucket": {
-                "Fn::Join": [
-                    "-",
-                    [
-                        {"Ref": "S3BucketName"},
-                        {"Ref": "AWS::Region"}
-                    ]
-                ]
-            },
-            "S3Key": {
-                "Fn::Join": [
-                    "",
-                    [
-                        {"Ref": "S3LambdaKeyPrefix"},
-                        "deployment-manager.zip"
-                    ]
-                ]
-            }
+          "S3Bucket": {
+            "Fn::Join": [
+              "-",
+              [
+                {
+                  "Ref": "S3BucketName"
+                },
+                {
+                  "Ref": "AWS::Region"
+                }
+              ]
+            ]
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "S3LambdaKeyPrefix"
+                },
+                "deployment-manager.zip"
+              ]
+            ]
+          }
         },
         "DeadLetterConfig": {
           "TargetArn": {
@@ -2806,7 +2913,7 @@
       }
     },
     "EventBus": {
-      "Description": "Event Bus Arn in hub", 
+      "Description": "Event Bus Arn in hub",
       "Value": {
         "Fn::GetAtt": [
           "QMBusFF5C6C0C",
@@ -2835,7 +2942,12 @@
     "SubnetIds": {
       "Description": "Subnet IDs",
       "Value": {
-        "Fn::Join": [",", {"Ref": "SubnetIds"}]
+        "Fn::Join": [
+          ",",
+          {
+            "Ref": "SubnetIds"
+          }
+        ]
       }
     }
   }
