@@ -2,15 +2,6 @@
 
 "Parameters": [
           {
-            "ParameterKey": "EventBusArn",
-            "ParameterValue": {
-              "Fn::GetAtt": [
-                "QMBusFF5C6C0C",
-                "Arn"
-              ]
-            }
-          },
-          {
             "ParameterKey": "SpokeSnsRegion",
             "ParameterValue": {
               "Ref": "SnsSpokeRegion"
