@@ -103,7 +103,15 @@
           "nodejs18.x"
         ],
         "Content": {
-          "S3Bucket": {"Ref": "S3BucketName"},
+          "S3Bucket": {
+            "Fn::Join": [
+              "-",
+              [
+                {"Ref": "S3BucketName"},
+                {"Ref": "AWS::Region"}
+              ]
+            ]
+          },
           "S3Key": {
             "Fn::Join": [
               "",
@@ -385,7 +393,15 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "S3Bucket": {"Ref": "S3BucketName"},
+          "S3Bucket": {
+            "Fn::Join": [
+              "-",
+              [
+                {"Ref": "S3BucketName"},
+                {"Ref": "AWS::Region"}
+              ]
+            ]
+          },
           "S3Key": {
             "Fn::Join": [
               "",
