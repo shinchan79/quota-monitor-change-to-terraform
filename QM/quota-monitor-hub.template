@@ -69,7 +69,7 @@
           "default": "List of regions to deploy resources to monitor service quotas"
         },
         "SnsSpokeRegion": {
-          "default": "Region in which to launch the SNS stack in each spoke account."
+          "default": "Region in which to launch the SNS stack in the spoke accounts."
         },
         "RegionConcurrencyType": {
           "default": "Region Concurrency"
@@ -758,7 +758,7 @@
           ]
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 5,
+        "Timeout": 60,
         "VpcConfig": {
           "SecurityGroupIds": [
             {
@@ -882,7 +882,7 @@
                     "",
                     [
                         {"Ref": "S3LambdaKeyPrefix"},
-                        "helper-provider.zip"
+                        "framework-onEvent.zip"
                     ]
                 ]
             }
@@ -1729,7 +1729,7 @@
           ]
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 60,
         "VpcConfig": {
           "SecurityGroupIds": [
             {
@@ -1785,35 +1785,35 @@
             }
           },
           {
-    "ParameterKey": "VpcId",
-    "ParameterValue": {
-      "Ref": "VpcId"
-    }
-  },
-  {
-    "ParameterKey": "SubnetIds",
-    "ParameterValue": {
-      "Fn::Join": [",", {"Ref": "SubnetIds"}]
-    }
-  },
-  {
-    "ParameterKey": "S3BucketName",
-    "ParameterValue": {
-      "Ref": "S3BucketName"
-    }
-  },
-  {
-    "ParameterKey": "S3LambdaKeyPrefix",
-    "ParameterValue": {
-      "Ref": "S3LambdaKeyPrefix"
-    }
-  },
-  {
-    "ParameterKey": "S3LayerKeyPrefix",
-    "ParameterValue": {
-      "Ref": "S3LayerKeyPrefix"
-    }
-  }
+            "ParameterKey": "VpcId",
+            "ParameterValue": {
+              "Ref": "VpcId"
+            }
+          },
+          {
+            "ParameterKey": "SubnetIds",
+            "ParameterValue": {
+              "Fn::Join": [",", {"Ref": "SubnetIds"}]
+            }
+          },
+          {
+            "ParameterKey": "S3BucketName",
+            "ParameterValue": {
+              "Ref": "S3BucketName"
+            }
+          },
+          {
+            "ParameterKey": "S3LambdaKeyPrefix",
+            "ParameterValue": {
+              "Ref": "S3LambdaKeyPrefix"
+            }
+          },
+          {
+            "ParameterKey": "S3LayerKeyPrefix",
+            "ParameterValue": {
+              "Ref": "S3LayerKeyPrefix"
+            }
+          }
         ],
         "PermissionModel": "SERVICE_MANAGED",
         "StackSetName": "QM-TA-Spoke-StackSet",
@@ -1954,27 +1954,27 @@
         },
         "Parameters": [
           {
-        "ParameterKey": "VpcId",
-        "ParameterValue": {"Ref": "VpcId"}
-      },
-      {
-        "ParameterKey": "SubnetIds",
-        "ParameterValue": {
-          "Fn::Join": [",", {"Ref": "SubnetIds"}]
-        }
-      },
-      {
-        "ParameterKey": "S3BucketName", 
-        "ParameterValue": {"Ref": "S3BucketName"}
-      },
-      {
-        "ParameterKey": "S3LambdaKeyPrefix",
-        "ParameterValue": {"Ref": "S3LambdaKeyPrefix"}
-      },
-      {
-        "ParameterKey": "S3LayerKeyPrefix",
-        "ParameterValue": {"Ref": "S3LayerKeyPrefix"}
-      }
+            "ParameterKey": "VpcId",
+            "ParameterValue": {"Ref": "VpcId"}
+          },
+          {
+            "ParameterKey": "SubnetIds",
+            "ParameterValue": {
+              "Fn::Join": [",", {"Ref": "SubnetIds"}]
+            }
+          },
+          {
+            "ParameterKey": "S3BucketName", 
+            "ParameterValue": {"Ref": "S3BucketName"}
+          },
+          {
+            "ParameterKey": "S3LambdaKeyPrefix",
+            "ParameterValue": {"Ref": "S3LambdaKeyPrefix"}
+          },
+          {
+            "ParameterKey": "S3LayerKeyPrefix",
+            "ParameterValue": {"Ref": "S3LayerKeyPrefix"}
+          }
         ],
         "PermissionModel": "SERVICE_MANAGED",
         "StackSetName": "QM-SNS-Spoke-StackSet",
@@ -2701,7 +2701,7 @@
           ]
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 60,
+        "Timeout": 120,
         "VpcConfig": {
           "SecurityGroupIds": [
             {
@@ -2736,13 +2736,19 @@
     "UUID": {
       "Description": "UUID for the deployment",
       "Value": {
-        "Fn::GetAtt": ["QMHelperCreateUUIDE0D423E6", "UUID"]
+        "Fn::GetAtt": [
+          "QMHelperCreateUUIDE0D423E6",
+          "UUID"
+        ]
       }
     },
     "EventBus": {
       "Description": "Event Bus Arn in hub", 
       "Value": {
-        "Fn::GetAtt": ["QMBusFF5C6C0C", "Arn"]
+        "Fn::GetAtt": [
+          "QMBusFF5C6C0C",
+          "Arn"
+        ]
       }
     },
     "SNSTopic": {
