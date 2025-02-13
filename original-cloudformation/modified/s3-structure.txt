@@ -1,0 +1,15 @@
+your-bucket/
+  └── quota-monitor-for-aws/
+      └── v6.3.0/
+          ├── lambda/
+          │   ├── helper-function.zip
+          │   ├── helper-provider.zip
+          │   ├── sns-publisher.zip
+          │   ├── reporter.zip
+          │   └── deployment-manager.zip
+          ├── layers/
+          │   └── utils-layer.zip
+          └── templates/
+              ├── quota-monitor-ta-spoke.template
+              ├── quota-monitor-sq-spoke.template
+              └── quota-monitor-sns-spoke.template
