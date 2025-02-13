@@ -1825,24 +1825,6 @@
             }
           },
           {
-            "ParameterKey": "SpokeSnsRegion",
-            "ParameterValue": {
-              "Ref": "SnsSpokeRegion"
-            }
-          },
-          {
-            "ParameterKey": "SageMakerMonitoring",
-            "ParameterValue": {
-              "Ref": "SageMakerMonitoring"
-            }
-          },
-          {
-            "ParameterKey": "ConnectMonitoring",
-            "ParameterValue": {
-              "Ref": "ConnectMonitoring"
-            }
-          },
-          {
             "ParameterKey": "VpcId",
             "ParameterValue": {
               "Ref": "VpcId"
@@ -1925,24 +1907,6 @@
             }
           },
           {
-            "ParameterKey": "SpokeSnsRegion",
-            "ParameterValue": {
-              "Ref": "SnsSpokeRegion"
-            }
-          },
-          {
-            "ParameterKey": "SageMakerMonitoring",
-            "ParameterValue": {
-              "Ref": "SageMakerMonitoring"
-            }
-          },
-          {
-            "ParameterKey": "ConnectMonitoring",
-            "ParameterValue": {
-              "Ref": "ConnectMonitoring"
-            }
-          },
-          {
             "ParameterKey": "VpcId",
             "ParameterValue": {
               "Ref": "VpcId"
@@ -2022,24 +1986,6 @@
                 "QMBusFF5C6C0C",
                 "Arn"
               ]
-            }
-          },
-          {
-            "ParameterKey": "SpokeSnsRegion",
-            "ParameterValue": {
-              "Ref": "SnsSpokeRegion"
-            }
-          },
-          {
-            "ParameterKey": "SageMakerMonitoring",
-            "ParameterValue": {
-              "Ref": "SageMakerMonitoring"
-            }
-          },
-          {
-            "ParameterKey": "ConnectMonitoring",
-            "ParameterValue": {
-              "Ref": "ConnectMonitoring"
             }
           },
           {
